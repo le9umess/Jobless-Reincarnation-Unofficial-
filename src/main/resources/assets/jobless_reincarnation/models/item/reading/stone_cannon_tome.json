@@ -1,0 +1,8 @@
+{
+  "parent": "jobless_reincarnation:item/reading/spread",
+  "textures": {
+    "left_cover": "jobless_reincarnation:item/stone_cannon_tome_cover",
+    "right_cover": "jobless_reincarnation:item/stone_cannon_tome_cover",
+    "mark": "jobless_reincarnation:item/stone_cannon_tome_mark"
+  }
+}

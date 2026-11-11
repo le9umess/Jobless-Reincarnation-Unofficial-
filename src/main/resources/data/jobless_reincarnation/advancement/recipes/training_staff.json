@@ -1,0 +1,15 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_redstone": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "minecraft:redstone" }] }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": { "recipe": "jobless_reincarnation:training_staff" }
+    }
+  },
+  "requirements": [["has_redstone", "has_the_recipe"]],
+  "rewards": { "recipes": ["jobless_reincarnation:training_staff"] }
+}

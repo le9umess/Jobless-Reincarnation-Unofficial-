@@ -1,0 +1,15 @@
+{
+	"trail_effects": [
+		{
+			"start_time": 0.085,
+			"end_time": 0.26,
+			"joint": "Tool_R",
+			"item_skin_hand": "main_hand",
+			"color": [
+				198,
+				228,
+				250
+			]
+		}
+	]
+}

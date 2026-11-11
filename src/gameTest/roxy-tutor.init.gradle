@@ -1,0 +1,25 @@
+// Standalone developer launch configuration; root build.gradle and release dependencies stay unchanged.
+gradle.projectsEvaluated {
+    def project = gradle.rootProject
+    if (!project.findProperty('roxyTutorPreview')?.toString()?.toBoolean()) return
+    if (!project.hasProperty('gameTests')) throw new GradleException('roxyTutorPreview requires -PgameTests')
+    def conflicting = ['wandPreview','trainingPreview','inputProbe','earthArtPreview','airArtPreview','healingArtPreview','waterArtPreview','tomeDisplayPreview','npcDisplayPreview','journalProbe','fireProbe','roxyNpcProbe']
+    if (conflicting.any { project.findProperty(it)?.toString()?.toBoolean() } || project.hasProperty('multiplayerProbe') || project.hasProperty('quickPlayMultiplayer'))
+        throw new GradleException('Roxy tutor scene must run independently of other previews/probes')
+    def role = project.findProperty('roxyTutorMode')?.toString() ?: 'manual'
+    if (!(role in ['manual','probe','host','observer'])) throw new GradleException('roxyTutorMode: manual/probe/host/observer only')
+    def lifecycle = project.findProperty('roxyTutorLifecycleProbe')?.toString()?.toBoolean() ?: false
+    if (lifecycle && role != 'manual') throw new GradleException('Lifecycle probe requires manual mode')
+    project.extensions.getByName('neoForge').runs.named('client').configure {
+        gameDirectory = project.file(role == 'observer' ? 'run-tutor-observer' : 'run-tutor')
+    }
+    project.tasks.named('runClient').configure {
+        systemProperty 'jobless_reincarnation.roxyTutorPreview', 'true'
+        systemProperty 'jobless_reincarnation.roxyTutorMode', role
+        systemProperty 'jobless_reincarnation.roxyTutorLifecycleProbe', lifecycle.toString()
+        if (role == 'observer') {
+            args '--username','JRObserver','--uuid',java.util.UUID.nameUUIDFromBytes('OfflinePlayer:JRObserver'.getBytes(java.nio.charset.StandardCharsets.UTF_8)).toString()
+        } else args '--quickPlaySingleplayer','JR Magic 0_2_0 Test'
+        args '--width','854','--height','480'
+    }
+}

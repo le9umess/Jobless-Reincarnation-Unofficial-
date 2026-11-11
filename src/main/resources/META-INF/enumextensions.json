@@ -1,0 +1,22 @@
+{
+  "entries": [
+    {
+      "enum": "net/minecraft/client/model/HumanoidModel$ArmPose",
+      "name": "JOBLESS_REINCARNATION_WAND_CAST",
+      "constructor": "(ZLnet/neoforged/neoforge/client/IArmPoseTransformer;)V",
+      "parameters": {
+        "class": "dev/joblessreincarnation/client/WandClientExtensions$ArmPoseParameters",
+        "field": "WAND_CAST"
+      }
+    },
+    {
+      "enum": "net/minecraft/client/model/HumanoidModel$ArmPose",
+      "name": "JOBLESS_REINCARNATION_TOME_READING",
+      "constructor": "(ZLnet/neoforged/neoforge/client/IArmPoseTransformer;)V",
+      "parameters": {
+        "class": "dev/joblessreincarnation/client/TomeReading$ArmPoseParameters",
+        "field": "READING"
+      }
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+// Standalone developer launch for the Water Shield visual preview; root build.gradle and release dependencies stay unchanged.
+// Usage: gradlew runClient -PgameTests -PwaterShieldPreview=true --init-script src/gameTest/water-shield-preview.init.gradle
+// The client plays a copy of the test world in run-water-shield/saves, never the shared run/ world.
+gradle.projectsEvaluated {
+    def project = gradle.rootProject
+    if (!project.findProperty('waterShieldPreview')?.toString()?.toBoolean()) return
+    if (!project.hasProperty('gameTests')) throw new GradleException('waterShieldPreview requires -PgameTests')
+    def conflicting = ['wandPreview','trainingPreview','inputProbe','earthArtPreview','airArtPreview','healingArtPreview','waterArtPreview','tomeDisplayPreview','npcDisplayPreview','journalProbe','fireProbe',
+                       'roxyNpcProbe','roxyTutorPreview','fireTrainingProbe','tomeFeedbackProbe','tutorInputProbe']
+    if (conflicting.any { project.findProperty(it)?.toString()?.toBoolean() } || project.hasProperty('multiplayerProbe') || project.hasProperty('quickPlayMultiplayer'))
+        throw new GradleException('The Water Shield preview must run independently of other previews/probes')
+    project.extensions.getByName('neoForge').runs.named('client').configure {
+        gameDirectory = project.file('run-water-shield')
+    }
+    project.tasks.named('runClient').configure {
+        systemProperty 'jobless_reincarnation.waterShieldPreview', 'true'
+        args '--quickPlaySingleplayer','JR Magic 0_2_0 Test'
+        args '--width','1280','--height','720'
+    }
+}

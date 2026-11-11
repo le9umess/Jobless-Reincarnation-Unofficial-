@@ -1,0 +1,39 @@
+{
+  "parent": "jobless_reincarnation:item/training_staff",
+  "display": {
+    "thirdperson_righthand": {
+      "rotation": [
+        -115.6879,
+        29.0222,
+        -45.2455
+      ],
+      "translation": [
+        1.0432,
+        -1.0343,
+        -0.815
+      ],
+      "scale": [
+        0.6,
+        0.6,
+        0.6
+      ]
+    },
+    "thirdperson_lefthand": {
+      "rotation": [
+        -115.6879,
+        29.0222,
+        -45.2455
+      ],
+      "translation": [
+        1.0432,
+        -1.0343,
+        -0.815
+      ],
+      "scale": [
+        0.6,
+        0.6,
+        0.6
+      ]
+    }
+  }
+}

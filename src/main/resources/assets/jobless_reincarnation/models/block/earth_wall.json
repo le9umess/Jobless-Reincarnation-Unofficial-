@@ -1,0 +1,215 @@
+{
+  "credit": "Original Minecraft adaptation for Earth Wall teaching; not an official illustration",
+  "ambientocclusion": true,
+  "textures": {
+    "particle": "#earth",
+    "earth": "minecraft:block/packed_mud",
+    "rough": "minecraft:block/coarse_dirt"
+  },
+  "elements": [
+    {
+      "name": "lower_rough_earth",
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        3,
+        16
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            13,
+            16,
+            16
+          ],
+          "texture": "#rough",
+          "cullface": "north"
+        },
+        "south": {
+          "uv": [
+            0,
+            13,
+            16,
+            16
+          ],
+          "texture": "#rough",
+          "cullface": "south"
+        },
+        "west": {
+          "uv": [
+            0,
+            13,
+            16,
+            16
+          ],
+          "texture": "#rough",
+          "cullface": "west"
+        },
+        "east": {
+          "uv": [
+            0,
+            13,
+            16,
+            16
+          ],
+          "texture": "#rough",
+          "cullface": "east"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#rough",
+          "cullface": "down"
+        }
+      }
+    },
+    {
+      "name": "compacted_earth",
+      "from": [
+        0,
+        3,
+        0
+      ],
+      "to": [
+        16,
+        13,
+        16
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            3,
+            16,
+            13
+          ],
+          "texture": "#earth",
+          "cullface": "north"
+        },
+        "south": {
+          "uv": [
+            0,
+            3,
+            16,
+            13
+          ],
+          "texture": "#earth",
+          "cullface": "south"
+        },
+        "west": {
+          "uv": [
+            0,
+            3,
+            16,
+            13
+          ],
+          "texture": "#earth",
+          "cullface": "west"
+        },
+        "east": {
+          "uv": [
+            0,
+            3,
+            16,
+            13
+          ],
+          "texture": "#earth",
+          "cullface": "east"
+        }
+      }
+    },
+    {
+      "name": "upper_rough_earth",
+      "from": [
+        0,
+        13,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            3
+          ],
+          "texture": "#rough",
+          "cullface": "north"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            3
+          ],
+          "texture": "#rough",
+          "cullface": "south"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            16,
+            3
+          ],
+          "texture": "#rough",
+          "cullface": "west"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            16,
+            3
+          ],
+          "texture": "#rough",
+          "cullface": "east"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#rough",
+          "cullface": "up"
+        }
+      }
+    }
+  ],
+  "display": {
+    "gui": {
+      "rotation": [
+        30,
+        225,
+        0
+      ],
+      "translation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.625,
+        0.625,
+        0.625
+      ]
+    }
+  }
+}

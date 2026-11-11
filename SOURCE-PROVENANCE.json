@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "project": "Jobless Reincarnation",
+  "sourceMaintainer": "Le9umess",
+  "sourceLabel": "Le9umess / JR-0.1.0",
+  "releaseVersion": "0.1.0",
+  "scope": "Project-owned source implementation; excludes third-party code and artwork.",
+  "recordType": "Editable provenance note, not a digital signature; this file and SOURCE-PROVENANCE.md are not included in the release JAR.",
+  "licenseEffect": "No change to existing licenses or third-party notices.",
+  "releaseJar": {
+    "filename": "jobless_reincarnation-0.1.0.jar",
+    "sha256": "0ece400c7bebe5410fa49982702c72c26b684a668b29c8ad7dd91abe4290ec20"
+  }
+}

@@ -1,0 +1,53 @@
+modLoader="javafml"
+loaderVersion="${loader_version_range}"
+license="${mod_license}"
+
+[[mods]]
+modId="${mod_id}"
+version="${mod_version}"
+displayName="${mod_name}"
+authors="Le9umess"
+enumExtensions="META-INF/enumextensions.json"
+description='''
+An unofficial, free fan mod that brings the childhood chapter of Mushoku Tensei to Minecraft: growing up in Buena Village,
+learning magic from Roxy and the sword from Paul, and meeting Sylphiette. Made by Le9umess with AI assistance in development.
+'''
+
+[[mixins]]
+config="jobless_reincarnation.sword.mixins.json"
+
+[[dependencies.${mod_id}]]
+modId="neoforge"
+type="required"
+versionRange="[${neo_version},21.2)"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.${mod_id}]]
+modId="minecraft"
+type="required"
+versionRange="${minecraft_version_range}"
+ordering="NONE"
+side="BOTH"
+
+# NPCs are GeckoLib entities: the server loads their classes and clients render them, so both sides need it.
+[[dependencies.${mod_id}]]
+modId="geckolib"
+type="required"
+versionRange="[4.9.3,5)"
+ordering="NONE"
+side="BOTH"
+
+# Epic Fight is required on both sides, at the exact version this release was validated with.
+[[dependencies.${mod_id}]]
+modId="epicfight"
+type="required"
+versionRange="[21.17.3.1]"
+ordering="AFTER"
+side="BOTH"
+[[dependencies.${mod_id}]]
+modId="punchy"
+type="required"
+versionRange="[3.0,)"
+ordering="NONE"
+side="CLIENT"

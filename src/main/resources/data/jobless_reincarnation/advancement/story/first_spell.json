@@ -1,0 +1,29 @@
+{
+  "parent": "jobless_reincarnation:story/root",
+  "display": {
+    "icon": {
+      "id": "minecraft:book"
+    },
+    "title": {
+      "translate": "advancements.jobless_reincarnation.story.first_spell.title"
+    },
+    "description": {
+      "translate": "advancements.jobless_reincarnation.story.first_spell.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "learned": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "requirements": [
+    [
+      "learned"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

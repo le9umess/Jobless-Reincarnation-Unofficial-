@@ -1,0 +1,29 @@
+{
+  "textures": [
+    "jobless_reincarnation:spell/ember_0",
+    "jobless_reincarnation:spell/ember_1",
+    "jobless_reincarnation:spell/ember_2",
+    "jobless_reincarnation:spell/ember_3",
+    "jobless_reincarnation:spell/puff_0",
+    "jobless_reincarnation:spell/puff_1",
+    "jobless_reincarnation:spell/puff_2",
+    "jobless_reincarnation:spell/puff_3",
+    "jobless_reincarnation:spell/puff_4",
+    "jobless_reincarnation:spell/puff_5",
+    "jobless_reincarnation:spell/puff_6",
+    "jobless_reincarnation:spell/puff_7",
+    "jobless_reincarnation:spell/glow",
+    "jobless_reincarnation:spell/flame_0",
+    "jobless_reincarnation:spell/flame_1",
+    "jobless_reincarnation:spell/flame_2",
+    "jobless_reincarnation:spell/flame_3",
+    "jobless_reincarnation:spell/flame_4",
+    "jobless_reincarnation:spell/flame_5",
+    "jobless_reincarnation:spell/flame_6",
+    "jobless_reincarnation:spell/flame_7",
+    "jobless_reincarnation:spell/droplet_0",
+    "jobless_reincarnation:spell/droplet_1",
+    "jobless_reincarnation:spell/ring",
+    "jobless_reincarnation:spell/chip"
+  ]
+}

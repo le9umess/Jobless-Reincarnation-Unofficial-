@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:zombie",
+    "minecraft:husk",
+    "minecraft:skeleton",
+    "minecraft:stray",
+    "minecraft:creeper",
+    "jobless_reincarnation:rasta_bear"
+  ]
+}

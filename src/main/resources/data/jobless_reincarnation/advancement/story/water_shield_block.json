@@ -1,0 +1,29 @@
+{
+  "parent": "jobless_reincarnation:story/first_spell",
+  "display": {
+    "icon": {
+      "id": "jobless_reincarnation:water_shield_tome"
+    },
+    "title": {
+      "translate": "advancements.jobless_reincarnation.story.water_shield_block.title"
+    },
+    "description": {
+      "translate": "advancements.jobless_reincarnation.story.water_shield_block.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "blocked": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "requirements": [
+    [
+      "blocked"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

@@ -1,0 +1,35 @@
+{
+  "requirements": [
+    [
+      "has_oxeye_daisy",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "jobless_reincarnation:healing_tome"
+    ]
+  },
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "jobless_reincarnation:healing_tome"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    },
+    "has_oxeye_daisy": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "minecraft:oxeye_daisy"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  }
+}
+

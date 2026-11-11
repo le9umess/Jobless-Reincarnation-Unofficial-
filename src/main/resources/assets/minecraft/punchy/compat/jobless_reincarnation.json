@@ -1,0 +1,111 @@
+{
+  "itemSpecific": {
+    "jobless_reincarnation:practice_wooden_sword": {
+      "kind": "SWORD",
+      "transforms": {
+        "right": {
+          "scale": 1,
+          "rotX": -30,
+          "rotY": 0,
+          "rotZ": 15
+        },
+        "left": {
+          "scale": 1,
+          "rotX": -30,
+          "rotY": 0,
+          "rotZ": -15
+        }
+      }
+    },
+    "jobless_reincarnation:training_staff": {
+      "kind": "TORCH",
+      "armKind": "TORCH",
+      "customAnimation": [
+        {
+          "type": "useItem",
+          "name": "jobless_wand_cast"
+        }
+      ]
+    },
+    "jobless_reincarnation:healing_tome": {
+      "kind": "INGREDIENT",
+      "armKind": "INGREDIENT",
+      "customAnimation": [
+        {
+          "type": "useItem",
+          "name": "jobless_tome_read"
+        }
+      ]
+    },
+    "jobless_reincarnation:water_tome": {
+      "kind": "INGREDIENT",
+      "armKind": "INGREDIENT",
+      "customAnimation": [
+        {
+          "type": "useItem",
+          "name": "jobless_tome_read"
+        }
+      ]
+    },
+    "jobless_reincarnation:water_shield_tome": {
+      "kind": "INGREDIENT",
+      "armKind": "INGREDIENT",
+      "customAnimation": [
+        {
+          "type": "useItem",
+          "name": "jobless_tome_read"
+        }
+      ]
+    },
+    "jobless_reincarnation:earth_tome": {
+      "kind": "INGREDIENT",
+      "armKind": "INGREDIENT",
+      "customAnimation": [
+        {
+          "type": "useItem",
+          "name": "jobless_tome_read"
+        }
+      ]
+    },
+    "jobless_reincarnation:air_tome": {
+      "kind": "INGREDIENT",
+      "armKind": "INGREDIENT",
+      "customAnimation": [
+        {
+          "type": "useItem",
+          "name": "jobless_tome_read"
+        }
+      ]
+    },
+    "jobless_reincarnation:fire_tome": {
+      "kind": "INGREDIENT",
+      "armKind": "INGREDIENT",
+      "customAnimation": [
+        {
+          "type": "useItem",
+          "name": "jobless_tome_read"
+        }
+      ]
+    },
+    "jobless_reincarnation:mire_tome": {
+      "kind": "INGREDIENT",
+      "armKind": "INGREDIENT",
+      "customAnimation": [
+        {
+          "type": "useItem",
+          "name": "jobless_tome_read"
+        }
+      ]
+    },
+    "jobless_reincarnation:stone_cannon_tome": {
+      "kind": "INGREDIENT",
+      "armKind": "INGREDIENT",
+      "customAnimation": [
+        {
+          "type": "useItem",
+          "name": "jobless_tome_read"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "display": {
+    "icon": {
+      "id": "jobless_reincarnation:training_staff"
+    },
+    "title": {
+      "translate": "advancements.jobless_reincarnation.story.root.title"
+    },
+    "description": {
+      "translate": "advancements.jobless_reincarnation.story.root.description"
+    },
+    "background": "minecraft:textures/block/oak_planks.png",
+    "frame": "task",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "joined": {
+      "trigger": "minecraft:tick"
+    }
+  },
+  "requirements": [
+    [
+      "joined"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

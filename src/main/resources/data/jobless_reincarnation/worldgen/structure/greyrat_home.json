@@ -1,0 +1,11 @@
+{
+  "type": "jobless_reincarnation:greyrat_home",
+  "biomes": "#jobless_reincarnation:has_structure/greyrat_home",
+  "step": "top_layer_modification",
+  "spawn_overrides": {},
+  "terrain_adaptation": "beard_thin",
+  "start_pool": "jobless_reincarnation:greyrat_home/start",
+  "max_footprint_relief": 14,
+  "buffer_margin": 10,
+  "max_buffer_relief": 20
+}

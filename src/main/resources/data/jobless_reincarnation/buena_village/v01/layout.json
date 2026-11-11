@@ -1,0 +1,1367 @@
+{
+  "name": "buena_village_v01",
+  "note": "布耶纳村 V01 布局。坐标以村子西北角为原点，x 向东、z 向南，176×176。rotation 是从上往下看顺时针转几个 90°（门原本朝南）。预览把整村放在平地上；放进世界时每件按自己的地表高度放（模板 y=0 是地面层），路、田照地表铺。",
+  "size": [
+    176,
+    176
+  ],
+  "pieces": [
+    {
+      "id": "greyrat_home",
+      "template": "jobless_reincarnation:buena_village/v01/home_village",
+      "x": 72,
+      "z": 22,
+      "rotation": 0,
+      "size": [
+        33,
+        20,
+        39
+      ],
+      "footprint": [
+        72,
+        22,
+        104,
+        60
+      ],
+      "note": "格雷拉特家；院门 (88,55)，东墙开口 (102,48–50) 通练剑空地"
+    },
+    {
+      "id": "village_square",
+      "template": "jobless_reincarnation:buena_village/v01/village_square",
+      "x": 81,
+      "z": 85,
+      "rotation": 0,
+      "size": [
+        15,
+        8,
+        15
+      ],
+      "footprint": [
+        81,
+        85,
+        95,
+        99
+      ],
+      "note": "村中心的小广场和井"
+    },
+    {
+      "id": "sylphiette_hill",
+      "template": "jobless_reincarnation:sylphiette_meeting/main_v004",
+      "x": 36,
+      "z": 70,
+      "rotation": 0,
+      "size": [
+        23,
+        16,
+        23
+      ],
+      "footprint": [
+        36,
+        70,
+        58,
+        92
+      ],
+      "note": "山丘上的大树（原有的希露菲相遇点）"
+    },
+    {
+      "id": "rawls_cabin",
+      "template": "jobless_reincarnation:buena_village/v01/rawls_cabin",
+      "x": 18,
+      "z": 60,
+      "rotation": 0,
+      "size": [
+        13,
+        10,
+        13
+      ],
+      "footprint": [
+        18,
+        60,
+        30,
+        72
+      ],
+      "note": "罗尔兹家（猎人，森林边）"
+    },
+    {
+      "id": "watchtower",
+      "template": "jobless_reincarnation:buena_village/v01/watchtower",
+      "x": 6,
+      "z": 76,
+      "rotation": 0,
+      "size": [
+        9,
+        18,
+        9
+      ],
+      "footprint": [
+        6,
+        76,
+        14,
+        84
+      ],
+      "note": "森林边的瞭望塔"
+    },
+    {
+      "id": "watermill",
+      "template": "jobless_reincarnation:buena_village/v01/watermill",
+      "x": 131,
+      "z": 87,
+      "rotation": 0,
+      "size": [
+        13,
+        11,
+        11
+      ],
+      "footprint": [
+        131,
+        87,
+        143,
+        97
+      ],
+      "note": "河边的水车小屋，水渠就是河道"
+    },
+    {
+      "id": "house_01",
+      "template": "jobless_reincarnation:buena_village/v01/house_thatch",
+      "x": 63,
+      "z": 74,
+      "rotation": 0,
+      "size": [
+        13,
+        11,
+        13
+      ],
+      "footprint": [
+        63,
+        74,
+        75,
+        86
+      ]
+    },
+    {
+      "id": "house_02",
+      "template": "jobless_reincarnation:buena_village/v01/house_stone",
+      "x": 95,
+      "z": 64,
+      "rotation": 0,
+      "size": [
+        15,
+        15,
+        13
+      ],
+      "footprint": [
+        95,
+        64,
+        109,
+        76
+      ]
+    },
+    {
+      "id": "house_03",
+      "template": "jobless_reincarnation:buena_village/v01/house_thatch",
+      "x": 67,
+      "z": 99,
+      "rotation": 3,
+      "size": [
+        13,
+        11,
+        13
+      ],
+      "footprint": [
+        67,
+        99,
+        79,
+        111
+      ]
+    },
+    {
+      "id": "house_04",
+      "template": "jobless_reincarnation:buena_village/v01/house_stone",
+      "x": 93,
+      "z": 101,
+      "rotation": 1,
+      "size": [
+        13,
+        15,
+        15
+      ],
+      "footprint": [
+        93,
+        101,
+        105,
+        115
+      ]
+    },
+    {
+      "id": "house_05",
+      "template": "jobless_reincarnation:buena_village/v01/house_thatch",
+      "x": 112,
+      "z": 79,
+      "rotation": 0,
+      "size": [
+        13,
+        11,
+        13
+      ],
+      "footprint": [
+        112,
+        79,
+        124,
+        91
+      ]
+    },
+    {
+      "id": "house_06",
+      "template": "jobless_reincarnation:buena_village/v01/house_barn",
+      "x": 126,
+      "z": 60,
+      "rotation": 0,
+      "size": [
+        16,
+        11,
+        16
+      ],
+      "footprint": [
+        126,
+        60,
+        141,
+        75
+      ]
+    },
+    {
+      "id": "house_07",
+      "template": "jobless_reincarnation:buena_village/v01/house_thatch",
+      "x": 92,
+      "z": 118,
+      "rotation": 1,
+      "size": [
+        13,
+        11,
+        13
+      ],
+      "footprint": [
+        92,
+        118,
+        104,
+        130
+      ]
+    },
+    {
+      "id": "house_08",
+      "template": "jobless_reincarnation:buena_village/v01/house_stone",
+      "x": 73,
+      "z": 154,
+      "rotation": 3,
+      "size": [
+        13,
+        15,
+        15
+      ],
+      "footprint": [
+        73,
+        154,
+        85,
+        168
+      ]
+    },
+    {
+      "id": "house_09",
+      "template": "jobless_reincarnation:buena_village/v01/house_barn",
+      "x": 90,
+      "z": 157,
+      "rotation": 1,
+      "size": [
+        16,
+        11,
+        16
+      ],
+      "footprint": [
+        90,
+        157,
+        105,
+        172
+      ]
+    },
+    {
+      "id": "house_10",
+      "template": "jobless_reincarnation:buena_village/v01/house_thatch",
+      "x": 126,
+      "z": 133,
+      "rotation": 1,
+      "size": [
+        13,
+        11,
+        13
+      ],
+      "footprint": [
+        126,
+        133,
+        138,
+        145
+      ]
+    },
+    {
+      "id": "house_11",
+      "template": "jobless_reincarnation:buena_village/v01/house_thatch",
+      "x": 36,
+      "z": 107,
+      "rotation": 0,
+      "size": [
+        13,
+        11,
+        13
+      ],
+      "footprint": [
+        36,
+        107,
+        48,
+        119
+      ]
+    },
+    {
+      "id": "house_12",
+      "template": "jobless_reincarnation:buena_village/v01/house_stone",
+      "x": 114,
+      "z": 117,
+      "rotation": 1,
+      "size": [
+        13,
+        15,
+        15
+      ],
+      "footprint": [
+        114,
+        117,
+        126,
+        131
+      ]
+    }
+  ],
+  "sparringGround": {
+    "center": [
+      114,
+      49
+    ],
+    "radius": 8,
+    "rule": "照 P01 交件源码的场地规则：圆内满格同高地面（草地），上方 5 格无碰撞；四角路灯在圆外"
+  },
+  "fields": [
+    {
+      "id": "wheat_west",
+      "plot": "jobless_reincarnation:buena_village/v01/wheat_plot",
+      "origin": [
+        42,
+        31
+      ],
+      "plots": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          1,
+          1
+        ]
+      ],
+      "skipped": 0
+    },
+    {
+      "id": "wheat_east",
+      "plot": "jobless_reincarnation:buena_village/v01/wheat_plot",
+      "origin": [
+        124,
+        17
+      ],
+      "plots": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          3
+        ]
+      ],
+      "skipped": 0
+    },
+    {
+      "id": "wheat_southeast",
+      "plot": "jobless_reincarnation:buena_village/v01/wheat_plot",
+      "origin": [
+        112,
+        104
+      ],
+      "plots": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "skipped": 4
+    },
+    {
+      "id": "wheat_southwest",
+      "plot": "jobless_reincarnation:buena_village/v01/wheat_plot",
+      "origin": [
+        24,
+        122
+      ],
+      "plots": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          2,
+          2
+        ]
+      ],
+      "skipped": 0
+    },
+    {
+      "id": "wheat_south",
+      "plot": "jobless_reincarnation:buena_village/v01/wheat_plot",
+      "origin": [
+        107,
+        147
+      ],
+      "plots": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          2,
+          1
+        ]
+      ],
+      "skipped": 0
+    },
+    {
+      "id": "wheat_small",
+      "plot": "jobless_reincarnation:buena_village/v01/wheat_plot",
+      "origin": [
+        62,
+        113
+      ],
+      "plots": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "skipped": 0
+    },
+    {
+      "id": "bartelis_flowers",
+      "plot": "jobless_reincarnation:buena_village/v01/flower_plot",
+      "origin": [
+        63,
+        131
+      ],
+      "plots": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          1,
+          1
+        ]
+      ],
+      "skipped": 0
+    },
+    {
+      "id": "vegetables",
+      "plot": "jobless_reincarnation:buena_village/v01/vegetable_plot",
+      "origin": [
+        114,
+        66
+      ],
+      "plots": [
+        [
+          0,
+          0
+        ]
+      ],
+      "skipped": 0
+    }
+  ],
+  "mudField": {
+    "x": 52,
+    "z": 100,
+    "w": 14,
+    "h": 12
+  },
+  "roads": [
+    {
+      "id": "main",
+      "width": 3,
+      "points": [
+        [
+          88,
+          61
+        ],
+        [
+          88,
+          175
+        ]
+      ],
+      "surface": "minecraft:dirt_path，约七分之一 coarse_dirt"
+    },
+    {
+      "id": "east_west_w",
+      "width": 2,
+      "points": [
+        [
+          24,
+          92
+        ],
+        [
+          40,
+          96
+        ],
+        [
+          70,
+          94
+        ],
+        [
+          81,
+          92
+        ]
+      ],
+      "surface": "minecraft:dirt_path，约七分之一 coarse_dirt"
+    },
+    {
+      "id": "east_west_e",
+      "width": 2,
+      "points": [
+        [
+          95,
+          92
+        ],
+        [
+          130,
+          92
+        ]
+      ],
+      "surface": "minecraft:dirt_path，约七分之一 coarse_dirt"
+    },
+    {
+      "id": "to_mill",
+      "width": 2,
+      "points": [
+        [
+          130,
+          93
+        ],
+        [
+          130,
+          98
+        ],
+        [
+          135,
+          98
+        ]
+      ],
+      "surface": "minecraft:dirt_path，约七分之一 coarse_dirt"
+    },
+    {
+      "id": "to_rawls",
+      "width": 1,
+      "points": [
+        [
+          24,
+          73
+        ],
+        [
+          24,
+          91
+        ]
+      ],
+      "surface": "minecraft:dirt_path，约七分之一 coarse_dirt"
+    },
+    {
+      "id": "to_tower",
+      "width": 1,
+      "points": [
+        [
+          15,
+          80
+        ],
+        [
+          23,
+          80
+        ]
+      ],
+      "surface": "minecraft:dirt_path，约七分之一 coarse_dirt"
+    },
+    {
+      "id": "to_sparring",
+      "width": 3,
+      "points": [
+        [
+          103,
+          49
+        ],
+        [
+          104,
+          49
+        ]
+      ],
+      "surface": "minecraft:dirt_path，约七分之一 coarse_dirt"
+    },
+    {
+      "id": "northeast",
+      "width": 2,
+      "points": [
+        [
+          95,
+          86
+        ],
+        [
+          104,
+          84
+        ],
+        [
+          112,
+          78
+        ],
+        [
+          130,
+          78
+        ]
+      ],
+      "surface": "minecraft:dirt_path，约七分之一 coarse_dirt"
+    },
+    {
+      "id": "southeast",
+      "width": 2,
+      "points": [
+        [
+          108,
+          93
+        ],
+        [
+          108,
+          145
+        ]
+      ],
+      "surface": "minecraft:dirt_path，约七分之一 coarse_dirt"
+    },
+    {
+      "id": "southwest",
+      "width": 2,
+      "points": [
+        [
+          50,
+          97
+        ],
+        [
+          50,
+          120
+        ]
+      ],
+      "surface": "minecraft:dirt_path，约七分之一 coarse_dirt"
+    },
+    {
+      "id": "link_02",
+      "width": 1,
+      "points": [
+        [
+          102,
+          77
+        ],
+        [
+          102,
+          84
+        ]
+      ],
+      "surface": "minecraft:dirt_path，约七分之一 coarse_dirt"
+    },
+    {
+      "id": "link_06",
+      "width": 1,
+      "points": [
+        [
+          130,
+          76
+        ],
+        [
+          130,
+          78
+        ]
+      ],
+      "surface": "minecraft:dirt_path，约七分之一 coarse_dirt"
+    },
+    {
+      "id": "link_10",
+      "width": 1,
+      "points": [
+        [
+          110,
+          139
+        ],
+        [
+          125,
+          139
+        ]
+      ],
+      "surface": "minecraft:dirt_path，约七分之一 coarse_dirt"
+    },
+    {
+      "id": "link_12",
+      "width": 1,
+      "points": [
+        [
+          110,
+          124
+        ],
+        [
+          113,
+          124
+        ]
+      ],
+      "surface": "minecraft:dirt_path，约七分之一 coarse_dirt"
+    },
+    {
+      "id": "link_11",
+      "width": 1,
+      "points": [
+        [
+          42,
+          120
+        ],
+        [
+          49,
+          120
+        ]
+      ],
+      "surface": "minecraft:dirt_path，约七分之一 coarse_dirt"
+    },
+    {
+      "id": "link_fields_sw",
+      "width": 1,
+      "points": [
+        [
+          52,
+          121
+        ],
+        [
+          61,
+          121
+        ]
+      ],
+      "surface": "minecraft:dirt_path，约七分之一 coarse_dirt"
+    },
+    {
+      "id": "link_01",
+      "width": 1,
+      "points": [
+        [
+          69,
+          87
+        ],
+        [
+          69,
+          93
+        ]
+      ],
+      "surface": "minecraft:dirt_path，约七分之一 coarse_dirt"
+    },
+    {
+      "id": "link_03",
+      "width": 1,
+      "points": [
+        [
+          80,
+          105
+        ],
+        [
+          86,
+          105
+        ]
+      ],
+      "surface": "minecraft:dirt_path，约七分之一 coarse_dirt"
+    },
+    {
+      "id": "link_04",
+      "width": 1,
+      "points": [
+        [
+          90,
+          108
+        ],
+        [
+          92,
+          108
+        ]
+      ],
+      "surface": "minecraft:dirt_path，约七分之一 coarse_dirt"
+    },
+    {
+      "id": "link_07",
+      "width": 1,
+      "points": [
+        [
+          90,
+          124
+        ],
+        [
+          91,
+          124
+        ]
+      ],
+      "surface": "minecraft:dirt_path，约七分之一 coarse_dirt"
+    },
+    {
+      "id": "link_08",
+      "width": 1,
+      "points": [
+        [
+          86,
+          161
+        ],
+        [
+          86,
+          161
+        ]
+      ],
+      "surface": "minecraft:dirt_path，约七分之一 coarse_dirt"
+    }
+  ],
+  "river": {
+    "centreline": "x = round(146 + 6·sin(z/22))",
+    "waterWidth": 3,
+    "bank": 1,
+    "bankBlocks": [
+      "sand",
+      "gravel",
+      "coarse_dirt",
+      "clay"
+    ],
+    "note": "水车小屋那一段（z 87–97）用小屋模板自带的水渠"
+  },
+  "trees": [
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak",
+      "x": -2,
+      "z": 0
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak_big",
+      "x": 3,
+      "z": -3
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak",
+      "x": 11,
+      "z": -1
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_birch",
+      "x": 20,
+      "z": -2
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak",
+      "x": 26,
+      "z": -2
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak_big",
+      "x": 31,
+      "z": -3
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak",
+      "x": 6,
+      "z": 2
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_birch",
+      "x": 16,
+      "z": 2
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak",
+      "x": 20,
+      "z": 2
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_birch",
+      "x": 24,
+      "z": 4
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak",
+      "x": 31,
+      "z": 3
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak",
+      "x": 2,
+      "z": 6
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak",
+      "x": 16,
+      "z": 8
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_birch",
+      "x": 20,
+      "z": 8
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak",
+      "x": 26,
+      "z": 8
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak",
+      "x": -1,
+      "z": 10
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak",
+      "x": 8,
+      "z": 12
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak",
+      "x": 15,
+      "z": 12
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_birch",
+      "x": 2,
+      "z": 15
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak",
+      "x": -1,
+      "z": 20
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak_big",
+      "x": 6,
+      "z": 18
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak_big",
+      "x": 14,
+      "z": 17
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak_big",
+      "x": 3,
+      "z": 23
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak",
+      "x": 0,
+      "z": 27
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak_big",
+      "x": 9,
+      "z": 25
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak",
+      "x": -1,
+      "z": 32
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak",
+      "x": -2,
+      "z": 36
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_birch",
+      "x": 7,
+      "z": 39
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_birch",
+      "x": -1,
+      "z": 42
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_birch",
+      "x": 3,
+      "z": 43
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak",
+      "x": 0,
+      "z": 52
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak_big",
+      "x": 5,
+      "z": 50
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_birch",
+      "x": 4,
+      "z": 56
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak",
+      "x": 11,
+      "z": 54
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak",
+      "x": 12,
+      "z": 58
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak",
+      "x": -1,
+      "z": 63
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak",
+      "x": 4,
+      "z": 64
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_birch",
+      "x": 12,
+      "z": 62
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak",
+      "x": 0,
+      "z": 67
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak",
+      "x": 10,
+      "z": 67
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak",
+      "x": -2,
+      "z": 75
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak",
+      "x": -1,
+      "z": 79
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak",
+      "x": -1,
+      "z": 87
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_birch",
+      "x": 3,
+      "z": 87
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak",
+      "x": 7,
+      "z": 90
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak",
+      "x": -2,
+      "z": 94
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak",
+      "x": 3,
+      "z": 94
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak",
+      "x": 7,
+      "z": 94
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak",
+      "x": 7,
+      "z": 99
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak",
+      "x": -2,
+      "z": 102
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak",
+      "x": 0,
+      "z": 107
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak",
+      "x": 6,
+      "z": 107
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_birch",
+      "x": 8,
+      "z": 111
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak",
+      "x": -2,
+      "z": 114
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_birch",
+      "x": 2,
+      "z": 116
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak",
+      "x": 6,
+      "z": 116
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak",
+      "x": 11,
+      "z": 118
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak",
+      "x": -1,
+      "z": 122
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak",
+      "x": 3,
+      "z": 124
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak",
+      "x": 10,
+      "z": 122
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak_big",
+      "x": -3,
+      "z": 126
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak_big",
+      "x": 10,
+      "z": 127
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_birch",
+      "x": -1,
+      "z": 135
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak",
+      "x": 8,
+      "z": 135
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak",
+      "x": 3,
+      "z": 139
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_birch",
+      "x": 10,
+      "z": 139
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak_big",
+      "x": 1,
+      "z": 146
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_birch",
+      "x": 7,
+      "z": 146
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_birch",
+      "x": -2,
+      "z": 152
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak",
+      "x": 3,
+      "z": 151
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak",
+      "x": 7,
+      "z": 152
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak",
+      "x": 2,
+      "z": 156
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak",
+      "x": 7,
+      "z": 156
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_birch",
+      "x": -1,
+      "z": 164
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak_big",
+      "x": 5,
+      "z": 161
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak",
+      "x": 4,
+      "z": 166
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak_big",
+      "x": 9,
+      "z": 166
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak_big",
+      "x": -3,
+      "z": 169
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_birch",
+      "x": 56,
+      "z": 58
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak_big",
+      "x": 17,
+      "z": 101
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak",
+      "x": 34,
+      "z": 158
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak",
+      "x": 158,
+      "z": 38
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_birch",
+      "x": 58,
+      "z": 166
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_birch",
+      "x": 98,
+      "z": 138
+    },
+    {
+      "template": "jobless_reincarnation:buena_village/v01/tree_oak",
+      "x": 153,
+      "z": 98
+    }
+  ],
+  "problems": [],
+  "schema": 1,
+  "layoutVersion": "v01"
+}

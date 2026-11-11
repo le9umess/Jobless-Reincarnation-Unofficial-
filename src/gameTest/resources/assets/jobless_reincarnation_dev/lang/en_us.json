@@ -1,0 +1,9 @@
+{
+  "message.jobless_reincarnation_dev.roxy_tutor.marker": "[Development teaching · Roxy]",
+  "message.jobless_reincarnation_dev.roxy_tutor.learn": "First study the Water Ball Tome to learn Water Ball, then come back and show me your practice.",
+  "message.jobless_reincarnation_dev.roxy_tutor.cast": "Successful Water Ball casts: %s/%s. Keep practising with your Apprentice Wand in Survival mode, then speak to me again.",
+  "message.jobless_reincarnation_dev.roxy_tutor.distance": "Qualifying target hits: %s/%s. In Survival mode, cast Water Ball and hit a target block from at least %s blocks away, measured from where you released it.",
+  "message.jobless_reincarnation_dev.roxy_tutor.shaping": "Next, keep charging after the chant until it reads Fully shaped, then release and hit a target block from at least %s blocks away in Survival mode.",
+  "message.jobless_reincarnation_dev.roxy_tutor.claim_at_board": "You have met the water magic practice goals. Claim your Water Magic Practice Card at the Water Magic Training Board.",
+  "message.jobless_reincarnation_dev.roxy_tutor.complete": "You have already claimed your Water Magic Practice Card. You can keep practising with the Apprentice Wand and targets."
+}

@@ -1,0 +1,32 @@
+{
+	"format_version": "1.8.0",
+	"animations": {
+		"animation.practice_dummy.idle": {
+			"loop": true,
+			"animation_length": 1,
+			"bones": {
+				"body": {
+					"rotation": [0, 0, 0]
+				}
+			}
+		},
+		"animation.practice_dummy.hit_candidate": {
+			"loop": false,
+			"animation_length": 0.35,
+			"bones": {
+				"body": {
+					"rotation": {
+						"0.0": [0, 0, 0],
+						"0.05": [-2.6, 0, 0.4],
+						"0.1": [-4.5, 0, 0.7],
+						"0.15": [-1.8, 0, 0.3],
+						"0.2": [1.6, 0, -0.3],
+						"0.25": [0.7, 0, -0.1],
+						"0.3": [-0.3, 0, 0.05],
+						"0.35": [0, 0, 0]
+					}
+				}
+			}
+		}
+	}
+}

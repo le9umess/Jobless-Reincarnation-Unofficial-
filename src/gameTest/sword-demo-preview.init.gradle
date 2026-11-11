@@ -1,0 +1,27 @@
+// Standalone developer launch for the B01 presentation preview (Paul's sword_demo and held practice sword, the
+// placeholder practice dummy, the practice sword as an item); root build.gradle and release dependencies stay unchanged.
+// Usage: gradlew runClient -PgameTests -PswordDemoPreview=true --init-script src/gameTest/sword-demo-preview.init.gradle
+// Add -PswordDemoInteraction=true for two native client/server lesson queries with real AI and the independent pause.
+// The client plays a copy of the test world in run-sword-demo/saves, never the shared run/ world.
+gradle.projectsEvaluated {
+    def project = gradle.rootProject
+    if (!project.findProperty('swordDemoPreview')?.toString()?.toBoolean()) return
+    if (!project.hasProperty('gameTests')) throw new GradleException('swordDemoPreview requires -PgameTests')
+    def conflicting = ['wandPreview','trainingPreview','inputProbe','earthArtPreview','airArtPreview','healingArtPreview','waterArtPreview','tomeDisplayPreview','npcDisplayPreview','journalProbe','fireProbe',
+                       'roxyNpcProbe','roxyTutorPreview','fireTrainingProbe','tomeFeedbackProbe','tutorInputProbe','waterShieldPreview']
+    if (conflicting.any { project.findProperty(it)?.toString()?.toBoolean() } || project.hasProperty('multiplayerProbe') || project.hasProperty('quickPlayMultiplayer'))
+        throw new GradleException('The sword demo preview must run independently of other previews/probes')
+    project.extensions.getByName('neoForge').runs.named('client').configure {
+        gameDirectory = project.file('run-sword-demo')
+    }
+    project.tasks.named('runClient').configure {
+        systemProperty 'jobless_reincarnation.swordDemoPreview', 'true'
+        if (project.findProperty('swordDemoItemsOnly')?.toString()?.toBoolean()) systemProperty 'jobless_reincarnation.swordDemoPreview.itemsOnly', 'true'
+        if (project.findProperty('swordDemoInteraction')?.toString()?.toBoolean()) {
+            if (project.findProperty('swordDemoItemsOnly')?.toString()?.toBoolean()) throw new GradleException('swordDemoInteraction and swordDemoItemsOnly are separate modes')
+            systemProperty 'jobless_reincarnation.swordDemoPreview.interaction', 'true'
+        }
+        args '--quickPlaySingleplayer','JR Magic 0_2_0 Test'
+        args '--width','1280','--height','720'
+    }
+}

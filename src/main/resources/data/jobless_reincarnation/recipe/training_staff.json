@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": ["IRI", " S ", " S "],
+  "key": {
+    "I": { "item": "minecraft:iron_nugget" },
+    "R": { "item": "minecraft:redstone" },
+    "S": { "item": "minecraft:stick" }
+  },
+  "result": { "id": "jobless_reincarnation:training_staff", "count": 1 }
+}

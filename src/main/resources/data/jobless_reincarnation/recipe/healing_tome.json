@@ -1,0 +1,19 @@
+{
+  "category": "equipment",
+  "type": "minecraft:crafting_shapeless",
+  "result": {
+    "count": 1,
+    "id": "jobless_reincarnation:healing_tome"
+  },
+  "ingredients": [
+    {
+      "item": "minecraft:book"
+    },
+    {
+      "item": "minecraft:amethyst_shard"
+    },
+    {
+      "item": "minecraft:oxeye_daisy"
+    }
+  ]
+}

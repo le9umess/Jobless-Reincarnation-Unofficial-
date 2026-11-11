@@ -1,0 +1,152 @@
+{
+	"format_version": "1.9.0",
+	"credit": "practice_wooden_sword v001 candidate: novel 008 P8-10 gives only 'a comparatively short wooden sword' gifted by Paul; shape, size, wood colour and grain are Minecraft adaptation; no official image reused",
+	"ambientocclusion": false,
+	"texture_size": [32, 32],
+	"textures": {
+		"particle": "jobless_reincarnation:item/practice_wooden_sword",
+		"wood": "jobless_reincarnation:item/practice_wooden_sword"
+	},
+	"elements": [
+		{
+			"name": "blade",
+			"from": [7.25, 5.05, 7.68],
+			"to": [8.75, 13.4, 8.32],
+			"faces": {
+				"north": {"uv": [1.5, 0, 3, 8.5], "texture": "#wood"},
+				"east": {"uv": [3.5, 0, 4, 8.5], "texture": "#wood"},
+				"south": {"uv": [0, 0, 1.5, 8.5], "texture": "#wood"},
+				"west": {"uv": [3, 0, 3.5, 8.5], "texture": "#wood"},
+				"up": {"uv": [4, 0, 5.5, 0.5], "texture": "#wood"},
+				"down": {"uv": [4, 0, 5.5, 0.5], "texture": "#wood"}
+			}
+		},
+		{
+			"name": "blade_ridge",
+			"from": [7.85, 5.6, 7.62],
+			"to": [8.15, 12.8, 8.38],
+			"faces": {
+				"north": {"uv": [4.5, 1, 5, 8], "texture": "#wood"},
+				"east": {"uv": [5, 1, 5.5, 8], "texture": "#wood"},
+				"south": {"uv": [4.5, 1, 5, 8], "texture": "#wood"},
+				"west": {"uv": [5, 1, 5.5, 8], "texture": "#wood"},
+				"up": {"uv": [5.5, 1, 6, 1.5], "texture": "#wood"},
+				"down": {"uv": [5.5, 1, 6, 1.5], "texture": "#wood"}
+			}
+		},
+		{
+			"name": "tip_round_1",
+			"from": [7.5, 13.3, 7.72],
+			"to": [8.5, 14.1, 8.28],
+			"faces": {
+				"north": {"uv": [6, 0, 7, 1], "texture": "#wood"},
+				"east": {"uv": [7, 0, 7.5, 1], "texture": "#wood"},
+				"south": {"uv": [6, 0, 7, 1], "texture": "#wood"},
+				"west": {"uv": [7, 0, 7.5, 1], "texture": "#wood"},
+				"up": {"uv": [7.5, 0, 8.5, 0.5], "texture": "#wood"},
+				"down": {"uv": [4, 0, 5.5, 0.5], "texture": "#wood"}
+			}
+		},
+		{
+			"name": "tip_round_2",
+			"from": [7.75, 14, 7.76],
+			"to": [8.25, 14.6, 8.24],
+			"faces": {
+				"north": {"uv": [6, 0, 6.5, 0.5], "texture": "#wood"},
+				"east": {"uv": [7, 0, 7.5, 0.5], "texture": "#wood"},
+				"south": {"uv": [6, 0, 6.5, 0.5], "texture": "#wood"},
+				"west": {"uv": [7, 0, 7.5, 0.5], "texture": "#wood"},
+				"up": {"uv": [7.5, 0, 8, 0.5], "texture": "#wood"},
+				"down": {"uv": [7.5, 0, 8, 0.5], "texture": "#wood"}
+			}
+		},
+		{
+			"name": "crossguard",
+			"from": [5.9, 4.35, 7.4],
+			"to": [10.1, 5.15, 8.6],
+			"faces": {
+				"north": {"uv": [6, 2, 10, 3], "texture": "#wood"},
+				"east": {"uv": [10, 2, 11, 3], "texture": "#wood"},
+				"south": {"uv": [6, 2, 10, 3], "texture": "#wood"},
+				"west": {"uv": [10, 2, 11, 3], "texture": "#wood"},
+				"up": {"uv": [6, 3, 10, 4], "texture": "#wood"},
+				"down": {"uv": [6, 4, 10, 5], "texture": "#wood"}
+			}
+		},
+		{
+			"name": "grip",
+			"from": [7.55, 1.65, 7.55],
+			"to": [8.45, 4.45, 8.45],
+			"faces": {
+				"north": {"uv": [11, 0, 12, 3], "texture": "#wood"},
+				"east": {"uv": [11, 0, 12, 3], "texture": "#wood"},
+				"south": {"uv": [11, 0, 12, 3], "texture": "#wood"},
+				"west": {"uv": [11, 0, 12, 3], "texture": "#wood"},
+				"up": {"uv": [12, 0, 13, 1], "texture": "#wood"},
+				"down": {"uv": [12, 0, 13, 1], "texture": "#wood"}
+			}
+		},
+		{
+			"name": "pommel",
+			"from": [7.3, 0.85, 7.3],
+			"to": [8.7, 1.75, 8.7],
+			"faces": {
+				"north": {"uv": [11, 3, 12.5, 4], "texture": "#wood"},
+				"east": {"uv": [11, 3, 12.5, 4], "texture": "#wood"},
+				"south": {"uv": [11, 3, 12.5, 4], "texture": "#wood"},
+				"west": {"uv": [11, 3, 12.5, 4], "texture": "#wood"},
+				"up": {"uv": [12.5, 3, 14, 4.5], "texture": "#wood"},
+				"down": {"uv": [12.5, 3, 14, 4.5], "texture": "#wood"}
+			}
+		},
+		{
+			"name": "pommel_cap",
+			"from": [7.45, 0.55, 7.45],
+			"to": [8.55, 0.95, 8.55],
+			"faces": {
+				"north": {"uv": [11, 4, 12, 4.5], "texture": "#wood"},
+				"east": {"uv": [11, 4, 12, 4.5], "texture": "#wood"},
+				"south": {"uv": [11, 4, 12, 4.5], "texture": "#wood"},
+				"west": {"uv": [11, 4, 12, 4.5], "texture": "#wood"},
+				"up": {"uv": [14, 3, 15, 4], "texture": "#wood"},
+				"down": {"uv": [14, 3, 15, 4], "texture": "#wood"}
+			}
+		}
+	],
+	"gui_light": "front",
+	"display": {
+		"thirdperson_righthand": {
+			"rotation": [35, 90, 0],
+			"translation": [0, 4.54, 3.181],
+			"scale": [1.12, 1.12, 1.12]
+		},
+		"thirdperson_lefthand": {
+			"rotation": [35, 90, 0],
+			"translation": [0, 4.54, 3.181],
+			"scale": [1.12, 1.12, 1.12]
+		},
+		"firstperson_righthand": {
+			"rotation": [0, -30, 15],
+			"translation": [0.269, 6.928, 0.626],
+			"scale": [0.78, 0.78, 0.78]
+		},
+		"firstperson_lefthand": {
+			"rotation": [0, -30, 15],
+			"translation": [0.269, 6.928, 0.626],
+			"scale": [0.78, 0.78, 0.78]
+		},
+		"ground": {
+			"translation": [0, 2, 0],
+			"scale": [0.5, 0.5, 0.5]
+		},
+		"gui": {
+			"rotation": [0, 0, -45],
+			"translation": [0.375, 0.375, 0],
+			"scale": [1.25, 1.25, 1.25]
+		},
+		"fixed": {
+			"rotation": [0, -180, -45],
+			"scale": [1.2, 1.2, 1.2]
+		}
+	}
+}

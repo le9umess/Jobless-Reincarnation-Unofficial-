@@ -1,0 +1,12 @@
+{
+  "type": "jobless_reincarnation:sylphiette_meeting",
+  "biomes": "#jobless_reincarnation:has_structure/sylphiette_meeting",
+  "step": "top_layer_modification",
+  "spawn_overrides": {},
+  "terrain_adaptation": "none",
+  "start_pool": "jobless_reincarnation:sylphiette_meeting/terrain_start",
+  "max_footprint_rise": 3,
+  "buffer_margin": 4,
+  "max_buffer_rise": 5,
+  "min_base_above_sea_level": 2
+}

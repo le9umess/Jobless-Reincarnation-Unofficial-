@@ -1,0 +1,20 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "jobless_reincarnation:block/training_board",
+      "y": 0
+    },
+    "facing=east": {
+      "model": "jobless_reincarnation:block/training_board",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "jobless_reincarnation:block/training_board",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "jobless_reincarnation:block/training_board",
+      "y": 270
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "jobless_reincarnation:item/tear_pouch"
+  }
+}

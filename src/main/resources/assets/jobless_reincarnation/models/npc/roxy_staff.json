@@ -1,0 +1,747 @@
+{
+  "credit": "Jobless Reincarnation: Roxy's staff, built by generate-roxy-staff.mjs",
+  "textures": {
+    "particle": "#crook",
+    "shaft": "minecraft:block/stripped_birch_log",
+    "grip": "minecraft:block/brown_wool",
+    "silver": "minecraft:block/iron_block",
+    "crook": "minecraft:block/white_concrete",
+    "gem": "minecraft:block/light_blue_concrete",
+    "facet": "minecraft:block/blue_ice"
+  },
+  "elements": [
+    {
+      "name": "butt_cap",
+      "from": [7, 0, 7],
+      "to": [9, 1, 9],
+      "faces": {
+        "north": {
+          "uv": [0, 0, 2, 1],
+          "texture": "#silver"
+        },
+        "south": {
+          "uv": [0, 0, 2, 1],
+          "texture": "#silver"
+        },
+        "east": {
+          "uv": [0, 0, 2, 1],
+          "texture": "#silver"
+        },
+        "west": {
+          "uv": [0, 0, 2, 1],
+          "texture": "#silver"
+        },
+        "up": {
+          "uv": [0, 0, 2, 2],
+          "texture": "#silver"
+        },
+        "down": {
+          "uv": [0, 0, 2, 2],
+          "texture": "#silver"
+        }
+      }
+    },
+    {
+      "name": "shaft_low",
+      "from": [7.25, 1, 7.25],
+      "to": [8.75, 5.6, 8.75],
+      "faces": {
+        "north": {
+          "uv": [3, 3, 4.5, 7.6],
+          "texture": "#shaft"
+        },
+        "south": {
+          "uv": [3, 3, 4.5, 7.6],
+          "texture": "#shaft"
+        },
+        "east": {
+          "uv": [3, 3, 4.5, 7.6],
+          "texture": "#shaft"
+        },
+        "west": {
+          "uv": [3, 3, 4.5, 7.6],
+          "texture": "#shaft"
+        },
+        "up": {
+          "uv": [3, 3, 4.5, 4.5],
+          "texture": "#shaft"
+        },
+        "down": {
+          "uv": [3, 3, 4.5, 4.5],
+          "texture": "#shaft"
+        }
+      }
+    },
+    {
+      "name": "band_low",
+      "from": [7.05, 5.6, 7.05],
+      "to": [8.95, 6.4, 8.95],
+      "faces": {
+        "north": {
+          "uv": [6, 6, 7.9, 6.8],
+          "texture": "#silver"
+        },
+        "south": {
+          "uv": [6, 6, 7.9, 6.8],
+          "texture": "#silver"
+        },
+        "east": {
+          "uv": [6, 6, 7.9, 6.8],
+          "texture": "#silver"
+        },
+        "west": {
+          "uv": [6, 6, 7.9, 6.8],
+          "texture": "#silver"
+        },
+        "up": {
+          "uv": [6, 6, 7.9, 7.9],
+          "texture": "#silver"
+        },
+        "down": {
+          "uv": [6, 6, 7.9, 7.9],
+          "texture": "#silver"
+        }
+      }
+    },
+    {
+      "name": "shaft_mid",
+      "from": [7.25, 6.4, 7.25],
+      "to": [8.75, 11.6, 8.75],
+      "faces": {
+        "north": {
+          "uv": [0, 0, 1.5, 5.2],
+          "texture": "#shaft"
+        },
+        "south": {
+          "uv": [0, 0, 1.5, 5.2],
+          "texture": "#shaft"
+        },
+        "east": {
+          "uv": [0, 0, 1.5, 5.2],
+          "texture": "#shaft"
+        },
+        "west": {
+          "uv": [0, 0, 1.5, 5.2],
+          "texture": "#shaft"
+        },
+        "up": {
+          "uv": [0, 0, 1.5, 1.5],
+          "texture": "#shaft"
+        },
+        "down": {
+          "uv": [0, 0, 1.5, 1.5],
+          "texture": "#shaft"
+        }
+      }
+    },
+    {
+      "name": "grip",
+      "from": [7.1, 11.6, 7.1],
+      "to": [8.9, 16.4, 8.9],
+      "faces": {
+        "north": {
+          "uv": [3, 3, 4.8, 7.8],
+          "texture": "#grip"
+        },
+        "south": {
+          "uv": [3, 3, 4.8, 7.8],
+          "texture": "#grip"
+        },
+        "east": {
+          "uv": [3, 3, 4.8, 7.8],
+          "texture": "#grip"
+        },
+        "west": {
+          "uv": [3, 3, 4.8, 7.8],
+          "texture": "#grip"
+        },
+        "up": {
+          "uv": [3, 3, 4.8, 4.8],
+          "texture": "#grip"
+        },
+        "down": {
+          "uv": [3, 3, 4.8, 4.8],
+          "texture": "#grip"
+        }
+      }
+    },
+    {
+      "name": "shaft_high",
+      "from": [7.25, 16.4, 7.25],
+      "to": [8.75, 21.6, 8.75],
+      "faces": {
+        "north": {
+          "uv": [6, 6, 7.5, 11.2],
+          "texture": "#shaft"
+        },
+        "south": {
+          "uv": [6, 6, 7.5, 11.2],
+          "texture": "#shaft"
+        },
+        "east": {
+          "uv": [6, 6, 7.5, 11.2],
+          "texture": "#shaft"
+        },
+        "west": {
+          "uv": [6, 6, 7.5, 11.2],
+          "texture": "#shaft"
+        },
+        "up": {
+          "uv": [6, 6, 7.5, 7.5],
+          "texture": "#shaft"
+        },
+        "down": {
+          "uv": [6, 6, 7.5, 7.5],
+          "texture": "#shaft"
+        }
+      }
+    },
+    {
+      "name": "band_high",
+      "from": [7.05, 21.6, 7.05],
+      "to": [8.95, 22.4, 8.95],
+      "faces": {
+        "north": {
+          "uv": [0, 0, 1.9, 0.8],
+          "texture": "#silver"
+        },
+        "south": {
+          "uv": [0, 0, 1.9, 0.8],
+          "texture": "#silver"
+        },
+        "east": {
+          "uv": [0, 0, 1.9, 0.8],
+          "texture": "#silver"
+        },
+        "west": {
+          "uv": [0, 0, 1.9, 0.8],
+          "texture": "#silver"
+        },
+        "up": {
+          "uv": [0, 0, 1.9, 1.9],
+          "texture": "#silver"
+        },
+        "down": {
+          "uv": [0, 0, 1.9, 1.9],
+          "texture": "#silver"
+        }
+      }
+    },
+    {
+      "name": "shaft_top",
+      "from": [7.25, 22.4, 7.25],
+      "to": [8.75, 24.6, 8.75],
+      "faces": {
+        "north": {
+          "uv": [3, 3, 4.5, 5.2],
+          "texture": "#shaft"
+        },
+        "south": {
+          "uv": [3, 3, 4.5, 5.2],
+          "texture": "#shaft"
+        },
+        "east": {
+          "uv": [3, 3, 4.5, 5.2],
+          "texture": "#shaft"
+        },
+        "west": {
+          "uv": [3, 3, 4.5, 5.2],
+          "texture": "#shaft"
+        },
+        "up": {
+          "uv": [3, 3, 4.5, 4.5],
+          "texture": "#shaft"
+        },
+        "down": {
+          "uv": [3, 3, 4.5, 4.5],
+          "texture": "#shaft"
+        }
+      }
+    },
+    {
+      "name": "collar",
+      "from": [7, 24.6, 7],
+      "to": [9, 25.4, 9],
+      "faces": {
+        "north": {
+          "uv": [6, 6, 8, 6.8],
+          "texture": "#silver"
+        },
+        "south": {
+          "uv": [6, 6, 8, 6.8],
+          "texture": "#silver"
+        },
+        "east": {
+          "uv": [6, 6, 8, 6.8],
+          "texture": "#silver"
+        },
+        "west": {
+          "uv": [6, 6, 8, 6.8],
+          "texture": "#silver"
+        },
+        "up": {
+          "uv": [6, 6, 8, 8],
+          "texture": "#silver"
+        },
+        "down": {
+          "uv": [6, 6, 8, 8],
+          "texture": "#silver"
+        }
+      }
+    },
+    {
+      "name": "crook_rise",
+      "from": [7.3, 25.4, 7.3],
+      "to": [8.7, 28.6, 8.7],
+      "faces": {
+        "north": {
+          "uv": [0, 0, 1.4, 3.2],
+          "texture": "#crook"
+        },
+        "south": {
+          "uv": [0, 0, 1.4, 3.2],
+          "texture": "#crook"
+        },
+        "east": {
+          "uv": [0, 0, 1.4, 3.2],
+          "texture": "#crook"
+        },
+        "west": {
+          "uv": [0, 0, 1.4, 3.2],
+          "texture": "#crook"
+        },
+        "up": {
+          "uv": [0, 0, 1.4, 1.4],
+          "texture": "#crook"
+        },
+        "down": {
+          "uv": [0, 0, 1.4, 1.4],
+          "texture": "#crook"
+        }
+      }
+    },
+    {
+      "name": "crook_upper_right",
+      "from": [6.538, 28.038, 7.3],
+      "to": [7.938, 30.438, 8.7],
+      "faces": {
+        "north": {
+          "uv": [3, 3, 4.4, 5.4],
+          "texture": "#crook"
+        },
+        "south": {
+          "uv": [3, 3, 4.4, 5.4],
+          "texture": "#crook"
+        },
+        "east": {
+          "uv": [3, 3, 4.4, 5.4],
+          "texture": "#crook"
+        },
+        "west": {
+          "uv": [3, 3, 4.4, 5.4],
+          "texture": "#crook"
+        },
+        "up": {
+          "uv": [3, 3, 4.4, 4.4],
+          "texture": "#crook"
+        },
+        "down": {
+          "uv": [3, 3, 4.4, 4.4],
+          "texture": "#crook"
+        }
+      },
+      "rotation": {
+        "angle": 45,
+        "axis": "z",
+        "origin": [7.238, 29.238, 8]
+      }
+    },
+    {
+      "name": "crook_top",
+      "from": [4.2, 29.3, 7.3],
+      "to": [6.6, 30.7, 8.7],
+      "faces": {
+        "north": {
+          "uv": [6, 6, 8.4, 7.4],
+          "texture": "#crook"
+        },
+        "south": {
+          "uv": [6, 6, 8.4, 7.4],
+          "texture": "#crook"
+        },
+        "east": {
+          "uv": [6, 6, 7.4, 7.4],
+          "texture": "#crook"
+        },
+        "west": {
+          "uv": [6, 6, 7.4, 7.4],
+          "texture": "#crook"
+        },
+        "up": {
+          "uv": [6, 6, 8.4, 7.4],
+          "texture": "#crook"
+        },
+        "down": {
+          "uv": [6, 6, 8.4, 7.4],
+          "texture": "#crook"
+        }
+      }
+    },
+    {
+      "name": "crook_upper_left",
+      "from": [2.862, 28.038, 7.3],
+      "to": [4.262, 30.438, 8.7],
+      "faces": {
+        "north": {
+          "uv": [0, 0, 1.4, 2.4],
+          "texture": "#crook"
+        },
+        "south": {
+          "uv": [0, 0, 1.4, 2.4],
+          "texture": "#crook"
+        },
+        "east": {
+          "uv": [0, 0, 1.4, 2.4],
+          "texture": "#crook"
+        },
+        "west": {
+          "uv": [0, 0, 1.4, 2.4],
+          "texture": "#crook"
+        },
+        "up": {
+          "uv": [0, 0, 1.4, 1.4],
+          "texture": "#crook"
+        },
+        "down": {
+          "uv": [0, 0, 1.4, 1.4],
+          "texture": "#crook"
+        }
+      },
+      "rotation": {
+        "angle": -45,
+        "axis": "z",
+        "origin": [3.562, 29.238, 8]
+      }
+    },
+    {
+      "name": "crook_left",
+      "from": [2.1, 26.2, 7.3],
+      "to": [3.5, 28.6, 8.7],
+      "faces": {
+        "north": {
+          "uv": [3, 3, 4.4, 5.4],
+          "texture": "#crook"
+        },
+        "south": {
+          "uv": [3, 3, 4.4, 5.4],
+          "texture": "#crook"
+        },
+        "east": {
+          "uv": [3, 3, 4.4, 5.4],
+          "texture": "#crook"
+        },
+        "west": {
+          "uv": [3, 3, 4.4, 5.4],
+          "texture": "#crook"
+        },
+        "up": {
+          "uv": [3, 3, 4.4, 4.4],
+          "texture": "#crook"
+        },
+        "down": {
+          "uv": [3, 3, 4.4, 4.4],
+          "texture": "#crook"
+        }
+      }
+    },
+    {
+      "name": "crook_lower_left",
+      "from": [2.862, 24.362, 7.3],
+      "to": [4.262, 26.762, 8.7],
+      "faces": {
+        "north": {
+          "uv": [6, 6, 7.4, 8.4],
+          "texture": "#crook"
+        },
+        "south": {
+          "uv": [6, 6, 7.4, 8.4],
+          "texture": "#crook"
+        },
+        "east": {
+          "uv": [6, 6, 7.4, 8.4],
+          "texture": "#crook"
+        },
+        "west": {
+          "uv": [6, 6, 7.4, 8.4],
+          "texture": "#crook"
+        },
+        "up": {
+          "uv": [6, 6, 7.4, 7.4],
+          "texture": "#crook"
+        },
+        "down": {
+          "uv": [6, 6, 7.4, 7.4],
+          "texture": "#crook"
+        }
+      },
+      "rotation": {
+        "angle": 45,
+        "axis": "z",
+        "origin": [3.562, 25.562, 8]
+      }
+    },
+    {
+      "name": "crook_tip",
+      "from": [4.438, 24.225, 7.4],
+      "to": [5.638, 25.425, 8.6],
+      "faces": {
+        "north": {
+          "uv": [0, 0, 1.2, 1.2],
+          "texture": "#crook"
+        },
+        "south": {
+          "uv": [0, 0, 1.2, 1.2],
+          "texture": "#crook"
+        },
+        "east": {
+          "uv": [0, 0, 1.2, 1.2],
+          "texture": "#crook"
+        },
+        "west": {
+          "uv": [0, 0, 1.2, 1.2],
+          "texture": "#crook"
+        },
+        "up": {
+          "uv": [0, 0, 1.2, 1.2],
+          "texture": "#crook"
+        },
+        "down": {
+          "uv": [0, 0, 1.2, 1.2],
+          "texture": "#crook"
+        }
+      }
+    },
+    {
+      "name": "gem_core",
+      "from": [4.4, 26.4, 7],
+      "to": [6.4, 28.4, 9],
+      "faces": {
+        "north": {
+          "uv": [3, 3, 5, 5],
+          "texture": "#gem"
+        },
+        "south": {
+          "uv": [3, 3, 5, 5],
+          "texture": "#gem"
+        },
+        "east": {
+          "uv": [3, 3, 5, 5],
+          "texture": "#gem"
+        },
+        "west": {
+          "uv": [3, 3, 5, 5],
+          "texture": "#gem"
+        },
+        "up": {
+          "uv": [3, 3, 5, 5],
+          "texture": "#gem"
+        },
+        "down": {
+          "uv": [3, 3, 5, 5],
+          "texture": "#gem"
+        }
+      }
+    },
+    {
+      "name": "gem_facets",
+      "from": [4.4, 26.4, 7.1],
+      "to": [6.4, 28.4, 8.9],
+      "faces": {
+        "north": {
+          "uv": [6, 6, 8, 8],
+          "texture": "#facet"
+        },
+        "south": {
+          "uv": [6, 6, 8, 8],
+          "texture": "#facet"
+        },
+        "east": {
+          "uv": [6, 6, 7.8, 8],
+          "texture": "#facet"
+        },
+        "west": {
+          "uv": [6, 6, 7.8, 8],
+          "texture": "#facet"
+        },
+        "up": {
+          "uv": [6, 6, 8, 7.8],
+          "texture": "#facet"
+        },
+        "down": {
+          "uv": [6, 6, 8, 7.8],
+          "texture": "#facet"
+        }
+      },
+      "rotation": {
+        "angle": 45,
+        "axis": "z",
+        "origin": [5.4, 27.4, 8]
+      }
+    },
+    {
+      "name": "gem_glint_south",
+      "from": [4.75, 27.75, 9],
+      "to": [5.3, 28.3, 9.15],
+      "faces": {
+        "north": {
+          "uv": [0, 0, 0.55, 0.55],
+          "texture": "#crook"
+        },
+        "south": {
+          "uv": [0, 0, 0.55, 0.55],
+          "texture": "#crook"
+        },
+        "east": {
+          "uv": [0, 0, 0.15, 0.55],
+          "texture": "#crook"
+        },
+        "west": {
+          "uv": [0, 0, 0.15, 0.55],
+          "texture": "#crook"
+        },
+        "up": {
+          "uv": [0, 0, 0.55, 0.15],
+          "texture": "#crook"
+        },
+        "down": {
+          "uv": [0, 0, 0.55, 0.15],
+          "texture": "#crook"
+        }
+      }
+    },
+    {
+      "name": "gem_glint_north",
+      "from": [4.75, 27.75, 6.85],
+      "to": [5.3, 28.3, 7],
+      "faces": {
+        "north": {
+          "uv": [3, 3, 3.55, 3.55],
+          "texture": "#crook"
+        },
+        "south": {
+          "uv": [3, 3, 3.55, 3.55],
+          "texture": "#crook"
+        },
+        "east": {
+          "uv": [3, 3, 3.15, 3.55],
+          "texture": "#crook"
+        },
+        "west": {
+          "uv": [3, 3, 3.15, 3.55],
+          "texture": "#crook"
+        },
+        "up": {
+          "uv": [3, 3, 3.55, 3.15],
+          "texture": "#crook"
+        },
+        "down": {
+          "uv": [3, 3, 3.55, 3.15],
+          "texture": "#crook"
+        }
+      }
+    },
+    {
+      "name": "prong_top",
+      "from": [5.2, 28.7, 7.8],
+      "to": [5.6, 29.4, 8.2],
+      "faces": {
+        "north": {
+          "uv": [6, 6, 6.4, 6.7],
+          "texture": "#silver"
+        },
+        "south": {
+          "uv": [6, 6, 6.4, 6.7],
+          "texture": "#silver"
+        },
+        "east": {
+          "uv": [6, 6, 6.4, 6.7],
+          "texture": "#silver"
+        },
+        "west": {
+          "uv": [6, 6, 6.4, 6.7],
+          "texture": "#silver"
+        },
+        "up": {
+          "uv": [6, 6, 6.4, 6.4],
+          "texture": "#silver"
+        },
+        "down": {
+          "uv": [6, 6, 6.4, 6.4],
+          "texture": "#silver"
+        }
+      }
+    },
+    {
+      "name": "prong_right",
+      "from": [6.7, 27.2, 7.8],
+      "to": [7.4, 27.6, 8.2],
+      "faces": {
+        "north": {
+          "uv": [0, 0, 0.7, 0.4],
+          "texture": "#silver"
+        },
+        "south": {
+          "uv": [0, 0, 0.7, 0.4],
+          "texture": "#silver"
+        },
+        "east": {
+          "uv": [0, 0, 0.4, 0.4],
+          "texture": "#silver"
+        },
+        "west": {
+          "uv": [0, 0, 0.4, 0.4],
+          "texture": "#silver"
+        },
+        "up": {
+          "uv": [0, 0, 0.7, 0.4],
+          "texture": "#silver"
+        },
+        "down": {
+          "uv": [0, 0, 0.7, 0.4],
+          "texture": "#silver"
+        }
+      }
+    },
+    {
+      "name": "prong_left",
+      "from": [3.5, 27.2, 7.8],
+      "to": [4.1, 27.6, 8.2],
+      "faces": {
+        "north": {
+          "uv": [3, 3, 3.6, 3.4],
+          "texture": "#silver"
+        },
+        "south": {
+          "uv": [3, 3, 3.6, 3.4],
+          "texture": "#silver"
+        },
+        "east": {
+          "uv": [3, 3, 3.4, 3.4],
+          "texture": "#silver"
+        },
+        "west": {
+          "uv": [3, 3, 3.4, 3.4],
+          "texture": "#silver"
+        },
+        "up": {
+          "uv": [3, 3, 3.6, 3.4],
+          "texture": "#silver"
+        },
+        "down": {
+          "uv": [3, 3, 3.6, 3.4],
+          "texture": "#silver"
+        }
+      }
+    }
+  ]
+}

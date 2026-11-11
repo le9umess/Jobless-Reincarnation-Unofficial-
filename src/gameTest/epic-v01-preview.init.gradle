@@ -1,0 +1,12 @@
+gradle.projectsEvaluated {
+    def p = gradle.rootProject
+    if (!p.findProperty('epicV01Preview')?.toString()?.toBoolean()) return
+    if (!p.hasProperty('gameTests')) throw new GradleException('epicV01Preview requires -PgameTests')
+    def label = p.findProperty('epicV01Label')?.toString()
+    if (!label || !(label ==~ /[a-zA-Z0-9_-]+/)) throw new GradleException('Unique epicV01Label required')
+    p.extensions.getByName('neoForge').runs.named('client').configure { gameDirectory = p.file('run-epic-v01/' + label) }
+    p.tasks.named('runClient').configure {
+        systemProperty 'jobless_reincarnation.epicV01Preview', 'true'
+        args '--quickPlaySingleplayer','JR V01 Prototype','--width','1280','--height','720','--username','JRV01Local'
+    }
+}

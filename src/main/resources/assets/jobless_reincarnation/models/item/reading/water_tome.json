@@ -1,0 +1,8 @@
+{
+  "parent": "jobless_reincarnation:item/reading/spread",
+  "textures": {
+    "left_cover": "minecraft:block/lapis_block",
+    "right_cover": "minecraft:block/lapis_block",
+    "mark": "minecraft:block/light_blue_concrete_powder"
+  }
+}

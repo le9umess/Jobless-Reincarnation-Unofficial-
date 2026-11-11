@@ -1,0 +1,29 @@
+{
+  "parent": "jobless_reincarnation:story/root",
+  "display": {
+    "icon": {
+      "id": "jobless_reincarnation:practice_wooden_sword"
+    },
+    "title": {
+      "translate": "advancements.jobless_reincarnation.story.first_sword_lesson.title"
+    },
+    "description": {
+      "translate": "advancements.jobless_reincarnation.story.first_sword_lesson.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "recognized": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "requirements": [
+    [
+      "recognized"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

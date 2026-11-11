@@ -1,0 +1,32 @@
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/**/build/
+
+# IDEs
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+!**/src/**/out/
+.vscode/
+.classpath
+.project
+.settings/
+.factorypath
+bin/
+!**/src/**/bin/
+
+# Operating systems
+.DS_Store
+Thumbs.db
+
+# Minecraft run directories: run/, run-gametest/ and the run-*/ folders of the development probes in build.gradle
+run/
+run-*/
+!**/src/**/run/
+repo/
+!**/src/**/repo/
+**/src/generated/**/.cache/

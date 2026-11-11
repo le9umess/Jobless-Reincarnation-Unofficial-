@@ -1,0 +1,7 @@
+{
+  "credit": "User-supplied AI adventurer-card draft, reused as training record; ID adaptation by Codex",
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "jobless_reincarnation:item/training_record"
+  }
+}

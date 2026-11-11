@@ -1,0 +1,9 @@
+{
+  "message.jobless_reincarnation_dev.roxy_tutor.marker": "[开发教学 · 洛琪希]",
+  "message.jobless_reincarnation_dev.roxy_tutor.learn": "先研读水弹术魔法书，学会水弹术，再来找我看练习进度。",
+  "message.jobless_reincarnation_dev.roxy_tutor.cast": "水弹术成功施放：%s/%s 次。请在生存模式下用初学者魔杖继续练习，再来告诉我进度。",
+  "message.jobless_reincarnation_dev.roxy_tutor.distance": "有效命中靶子：%s/%s 次。请在生存模式下施放水弹术，从距发射位置至少 %s 格的地方命中靶子。",
+  "message.jobless_reincarnation_dev.roxy_tutor.shaping": "接下来，咏唱后继续蓄力，等到“塑形完成”再松开，在生存模式下从距发射位置至少 %s 格的地方命中靶子一次。",
+  "message.jobless_reincarnation_dev.roxy_tutor.claim_at_board": "水术练习目标都完成了。请到水术练习板领取你的水术练习纪念卡。",
+  "message.jobless_reincarnation_dev.roxy_tutor.complete": "你已经领取过水术练习纪念卡，之后可以继续用初学者魔杖和靶子练习。"
+}

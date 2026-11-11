@@ -1,0 +1,159 @@
+{
+ "format_version": "1.8.0",
+ "animations": {
+  "jobless_wand_cast": {
+   "loop": "hold_on_last_frame",
+   "animation_length": 0.3,
+   "timeline": {
+    "0.0": "blend_from_current_origin;"
+   },
+   "bones": {
+    "right_arm": {
+     "rotation": {
+      "0.0": [
+       0,
+       0,
+       0
+      ],
+      "0.3": [
+       -22,
+       -24,
+       0
+      ]
+     }
+    },
+    "left_arm": {
+     "rotation": {
+      "0.0": [
+       0,
+       0,
+       0
+      ],
+      "0.3": [
+       -22,
+       24,
+       0
+      ]
+     }
+    },
+    "itemgrip_right": {
+     "rotation": {
+      "0.0": [
+       0,
+       0,
+       0
+      ],
+      "0.3": [
+       30,
+       0,
+       -33
+      ]
+     }
+    },
+    "itemgrip_left": {
+     "rotation": {
+      "0.0": [
+       0,
+       0,
+       0
+      ],
+      "0.3": [
+       30,
+       0,
+       33
+      ]
+     }
+    }
+   }
+  },
+  "jobless_tome_read": {
+   "loop": "hold_on_last_frame",
+   "animation_length": 0.3,
+   "timeline": {
+    "0.0": "dual_handed;blend_from_current_origin;"
+   },
+   "bones": {
+    "right_arm": {
+     "rotation": {
+      "0.0": [
+       0,
+       0,
+       0
+      ],
+      "0.3": [
+       -24,
+       -46,
+       0
+      ]
+     }
+    },
+    "left_arm": {
+     "rotation": {
+      "0.0": [
+       0,
+       0,
+       0
+      ],
+      "0.3": [
+       -24,
+       46,
+       0
+      ]
+     }
+    },
+    "itemgrip_right": {
+     "rotation": {
+      "0.0": [
+       0,
+       0,
+       0
+      ],
+      "0.3": [
+       55,
+       15,
+       -40
+      ]
+     },
+     "position": {
+      "0.0": [
+       0,
+       0,
+       0
+      ],
+      "0.3": [
+       1.2,
+       0,
+       0
+      ]
+     }
+    },
+    "itemgrip_left": {
+     "rotation": {
+      "0.0": [
+       0,
+       0,
+       0
+      ],
+      "0.3": [
+       55,
+       -15,
+       40
+      ]
+     },
+     "position": {
+      "0.0": [
+       0,
+       0,
+       0
+      ],
+      "0.3": [
+       -1.2,
+       0,
+       0
+      ]
+     }
+    }
+   }
+  }
+ }
+}

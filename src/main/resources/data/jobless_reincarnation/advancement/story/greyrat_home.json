@@ -1,0 +1,42 @@
+{
+  "parent": "jobless_reincarnation:story/root",
+  "display": {
+    "icon": {
+      "id": "minecraft:oak_door"
+    },
+    "title": {
+      "translate": "advancements.jobless_reincarnation.story.greyrat_home.title"
+    },
+    "description": {
+      "translate": "advancements.jobless_reincarnation.story.greyrat_home.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "visited": {
+      "trigger": "minecraft:location",
+      "conditions": {
+        "player": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "location": {
+                "structures": "jobless_reincarnation:greyrat_home"
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "visited"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

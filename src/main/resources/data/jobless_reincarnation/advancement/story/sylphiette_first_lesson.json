@@ -1,0 +1,17 @@
+{
+  "parent": "jobless_reincarnation:story/meet_sylphiette",
+  "display": {
+    "icon": { "id": "minecraft:water_bucket" },
+    "title": { "translate": "advancements.jobless_reincarnation.story.sylphiette_first_lesson.title" },
+    "description": { "translate": "advancements.jobless_reincarnation.story.sylphiette_first_lesson.description" },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "guided": { "trigger": "minecraft:impossible" }
+  },
+  "requirements": [["guided"]],
+  "sends_telemetry_event": false
+}
