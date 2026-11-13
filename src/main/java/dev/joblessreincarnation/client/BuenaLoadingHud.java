@@ -22,7 +22,7 @@ public final class BuenaLoadingHud {
         graphics.fill(0,y-5,screen.width,screen.height,0xF0101620);
         graphics.drawCenteredString(client.font,Component.translatable(progress.preparingSpawn()
                 ?"loading.jobless_reincarnation.spawn":"loading.jobless_reincarnation.village"),screen.width/2,y,0xE5D6B0);
-        graphics.drawCenteredString(client.font,Component.translatable("loading.jobless_reincarnation.survey",progress.checked(),progress.elapsedMillis()/1000),screen.width/2,y+13,0xFFFFFF);
+        graphics.drawCenteredString(client.font,Component.translatable("loading.jobless_reincarnation.survey",progress.checked(),progress.total(),progress.elapsedMillis()/1000),screen.width/2,y+13,0xFFFFFF);
     }
     private BuenaLoadingHud(){}
 }

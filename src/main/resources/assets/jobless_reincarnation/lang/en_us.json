@@ -573,5 +573,6 @@
   "advancements.jobless_reincarnation.story.paul_duel.description": "Complete both rounds of Paul's practice bout and earn his recognition.",
   "loading.jobless_reincarnation.village": "Finding suitable terrain for Buena Village",
   "loading.jobless_reincarnation.spawn": "Preparing a safe starting point outside the village",
-  "loading.jobless_reincarnation.survey": "%s sites checked · %s seconds"
+  "loading.jobless_reincarnation.survey": "%s of %s sites checked · %s seconds",
+  "message.jobless_reincarnation.buena.no_site": "No suitable place for Buena Village was found in this world. You can create a new world with a different seed."
 }

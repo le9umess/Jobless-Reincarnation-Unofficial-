@@ -573,5 +573,6 @@
   "advancements.jobless_reincarnation.story.paul_duel.description": "完成保罗的两阶段对练，得到他的认可。",
   "loading.jobless_reincarnation.village": "正在为布耶纳村寻找合适地形",
   "loading.jobless_reincarnation.spawn": "正在准备村外的安全出生点",
-  "loading.jobless_reincarnation.survey": "已检查 %s 处地形 · %s 秒"
+  "loading.jobless_reincarnation.survey": "已看 %s / 共 %s 处地形 · %s 秒",
+  "message.jobless_reincarnation.buena.no_site": "这个世界没有找到适合布耶纳村的位置，可以换个种子新建世界。"
 }

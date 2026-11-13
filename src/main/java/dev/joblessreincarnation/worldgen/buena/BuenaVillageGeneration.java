@@ -49,28 +49,37 @@ public final class BuenaVillageGeneration {
     public record Handle(MinecraftServer server,BuenaVillageLayout layout,BuenaVillagePlan plan){}
     private static final Map<RandomState,Handle> ACTIVE=new ConcurrentHashMap<>();
     private static final Map<RandomState,SiteSearch> SEARCHES=new ConcurrentHashMap<>();
-    public static final long SEARCH_LIMIT_MILLIS=90000;
-    public record SearchProgress(long elapsedMillis,int checked,boolean preparingSpawn){}
+    /** checked and total grow as S1 inserts neighbours; elapsed is shown on the loading screen and never decides anything. */
+    public record SearchProgress(long elapsedMillis,int checked,int total,boolean preparingSpawn){}
     public static @Nullable SearchProgress progress(MinecraftServer server){
         for(var job:SEARCHES.values())if(job.level.getServer()==server)
-            return new SearchProgress((System.nanoTime()-job.started)/1_000_000,job.checked,job.preparingSpawn);
+            return new SearchProgress((System.nanoTime()-job.started)/1_000_000,job.checked,job.total,job.preparingSpawn);
         return null;
     }
-    private static final class SearchDeadline extends RuntimeException {}
+    /**
+     * Two diagnostic switches, read once from JVM system properties. Neither changes which site is chosen.
+     *   -Djobless.buena.workers=N   a fixed number of survey workers instead of the automatic choice (1 vs 4 checks)
+     *   -Djobless.buena.trace=FILE  one CSV line per consumed site, in order; off by default, and then nothing is
+     *                               recorded per site
+     */
+    static final class Diagnostics {
+        static final int WORKERS=Integer.getInteger("jobless.buena.workers",0);
+        static final @Nullable String TRACE=System.getProperty("jobless.buena.trace");
+        private Diagnostics(){}
+    }
+    /** The new-world search: the village site and the world's initial spawn are chosen together. */
     private static final class SiteSearch {
         final ServerLevel level;final BuenaVillageLayout layout;final BlockPos spawn;
-        final boolean pairInitialSpawn;
         volatile boolean cancelled;
         final long started=System.nanoTime();
-        volatile int checked;
+        volatile int checked,total;
         volatile boolean preparingSpawn;
         final Map<String,java.util.concurrent.atomic.LongAdder> timings=new ConcurrentHashMap<>();
-        SiteSearch(ServerLevel level,BuenaVillageLayout layout){this(level,layout,level.getSharedSpawnPos(),false);}
-        SiteSearch(ServerLevel level,BuenaVillageLayout layout,BlockPos reference,boolean pair){
-            this.level=level;this.layout=layout;spawn=reference.immutable();pairInitialSpawn=pair;
+        SiteSearch(ServerLevel level,BuenaVillageLayout layout,BlockPos reference){
+            this.level=level;this.layout=layout;spawn=reference.immutable();
         }
+        /** Cancellation only: a server stop or an interrupt. No wall clock ends a search. */
         void check(){if(cancelled||Thread.currentThread().isInterrupted())throw new CancellationException();}
-        void checkTime(){check();if((System.nanoTime()-started)/1_000_000>=SEARCH_LIMIT_MILLIS)throw new SearchDeadline();}
     }
     public static @Nullable Handle active(RandomState state){return ACTIVE.get(state);}
 
@@ -84,8 +93,9 @@ public final class BuenaVillageGeneration {
         var layout=BuenaVillageLayout.load(level.getServer().getResourceManager(),level.getStructureManager());
         var guide=new ChunkPos(level.getChunkSource().randomState().sampler().findSpawnPosition());
         var reference=new BlockPos(guide.getMiddleBlockX(),level.getChunkSource().getGenerator().getSeaLevel(),guide.getMiddleBlockZ());
+        SiteSearch job=null;
         if(data.plan()==null){
-            var job=new SiteSearch(level,layout,reference,true);
+            job=new SiteSearch(level,layout,reference);
             JoblessReincarnation.LOGGER.info("Choosing Buena village terrain and its new-world initial spawn; noise reference {},{}",reference.getX(),reference.getZ());
             var ready=launchSearch(job,data);
             // World creation, before spawn preparation and before the first player is admitted.
@@ -96,6 +106,11 @@ public final class BuenaVillageGeneration {
         }else return;
         if(data.plan()==null||data.initialSpawn()==null){
             JoblessReincarnation.LOGGER.error("No safe Buena village/spawn pair was found; vanilla spawn creation is left in control ({})",data.note());
+            if(job!=null&&!job.cancelled&&data.plan()==null){
+                // Only here, right after this new world's own search came back empty: memory only, nothing saved.
+                NO_SITE_HINT.add(level.getServer());
+                JoblessReincarnation.LOGGER.info("Buena: this new world has no village; the first player to join is told once");
+            }
             return;
         }
         var spawn=data.initialSpawn();
@@ -117,21 +132,26 @@ public final class BuenaVillageGeneration {
         var layout=BuenaVillageLayout.load(level.getServer().getResourceManager(),level.getStructureManager());
         if(data.plan().matches(layout))remember(level,layout,data.plan());
     }
+    /** What a server start does with the saved record. Never a search: only a new world's creation searches. */
+    public enum OnStart{NOTHING,INCOMPATIBLE,RESUME}
+    public static OnStart onStart(@Nullable BuenaVillageData data,boolean structures){
+        if(data==null)return OnStart.NOTHING;
+        if(!data.compatible())return OnStart.INCOMPATIBLE;
+        if(!data.eligible()||!structures)return OnStart.NOTHING;
+        // No plan: a failed or interrupted creation, or an unpaired record from before 0.1.0. Left exactly as it is.
+        return data.plan()==null?OnStart.NOTHING:OnStart.RESUME;
+    }
     @SubscribeEvent public static void started(ServerStartedEvent event){
         if(event.getServer() instanceof GameTestServer)return;
         ServerLevel level=event.getServer().overworld();
         BuenaVillageData data=BuenaVillageData.get(level);
-        if(data==null)return;
-        if(!data.compatible()){JoblessReincarnation.LOGGER.error("Buena village data is newer or invalid; it has not been reset.");return;}
-        if(!data.eligible())return;
-        if(!level.getServer().getWorldData().worldGenOptions().generateStructures())return;
+        switch(onStart(data,level.getServer().getWorldData().worldGenOptions().generateStructures())){
+            case NOTHING->{return;}
+            case INCOMPATIBLE->{JoblessReincarnation.LOGGER.error("Buena village data is newer or invalid; it has not been reset.");return;}
+            case RESUME->{}
+        }
         try{
             BuenaVillageLayout layout=BuenaVillageLayout.load(level.getServer().getResourceManager(),level.getStructureManager());
-            if(data.plan()==null){
-                // Never silently substitute the old far-away-village policy after a paired creation fails.
-                if(!data.requiresInitialPair())beginSearch(level,data,layout);
-                return;
-            }
             if(!data.plan().matches(layout))throw new IllegalStateException("Saved village layout differs from its versioned resource");
             remember(level,layout,data.plan());
             level.getDataStorage().save();
@@ -149,36 +169,61 @@ public final class BuenaVillageGeneration {
     @SubscribeEvent public static void stopped(ServerStoppedEvent event){
         ACTIVE.entrySet().removeIf(e->e.getValue().server==event.getServer());
         SEARCHES.entrySet().removeIf(e->{if(e.getValue().level.getServer()!=event.getServer())return false;e.getValue().cancelled=true;return true;});
+        NO_SITE_HINT.remove(event.getServer());
+    }
+    /**
+     * Servers whose new world was just created without a village because its own site search found none. Memory only:
+     * the first player to join afterwards is told once; a restart, a reopened world or any older save never shows it.
+     */
+    private static final Set<MinecraftServer> NO_SITE_HINT=ConcurrentHashMap.newKeySet();
+    /** Takes the one-time no-village notice for this server: true once, then false. */
+    public static boolean takeNoSiteHint(MinecraftServer server){return NO_SITE_HINT.remove(server);}
+    /** Tests only: arms the notice as a failed new-world search does. */
+    public static void armNoSiteHintForTest(MinecraftServer server){NO_SITE_HINT.add(server);}
+    @SubscribeEvent public static void firstPlayerAfterNoSite(net.neoforged.neoforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent event){
+        if(!(event.getEntity() instanceof net.minecraft.server.level.ServerPlayer player)||!takeNoSiteHint(player.server))return;
+        player.sendSystemMessage(Component.translatableWithFallback("message.jobless_reincarnation.buena.no_site",
+                "No suitable place for Buena Village was found in this world. You can create a new world with a different seed."));
+        JoblessReincarnation.LOGGER.info("Buena: told {} once that this new world has no village",player.getGameProfile().getName());
     }
 
-    private static void beginSearch(ServerLevel level,BuenaVillageData data,BuenaVillageLayout layout){
-        launchSearch(new SiteSearch(level,layout),data);
-    }
     private static CompletableFuture<Void> launchSearch(SiteSearch job,BuenaVillageData data){
         var random=job.level.getChunkSource().randomState();
         if(SEARCHES.putIfAbsent(random,job)!=null)return CompletableFuture.completedFuture(null);
         data.noSite(0,0,"searching");
         return CompletableFuture.runAsync(()->{
             try{choose(job);}
-            catch(SearchDeadline expired){
-                noSite(job,job.checked,(System.nanoTime()-job.started)/1_000_000,"search_time_budget");
-                JoblessReincarnation.LOGGER.warn("Buena site search reached its {} ms budget after {} candidates; keeping vanilla spawn",SEARCH_LIMIT_MILLIS,job.checked);
-            }
             catch(CancellationException ignored){}
             catch(Exception e){JoblessReincarnation.LOGGER.error("Buena site survey failed without changing terrain",e);}
             finally{SEARCHES.remove(random,job);}
         },Util.backgroundExecutor());
     }
+    /**
+     * The slow path's work cap: logical terrain-column requests (every Terrain.at call a survey makes, counted before
+     * the per-worker cache, so neither the cache nor the worker count changes it), summed over the surveys in the fixed
+     * consumption order and checked only after a site has been fully handled (including any neighbours it adds). The
+     * vanilla fast path has no cap and walks the whole order.
+     */
+    public static final long SLOW_PATH_SAMPLE_CAP=250_000;
+    /**
+     * The deterministic survey. Sites come from BuenaSiteOrder (the 0.1.0 grid, climate hint first on the vanilla
+     * generator, with S1 neighbours inserted after late planning failures near the reference). Results are consumed
+     * strictly in that order and no clock decides anything. Workers only sample noise; structure checks, real chunks,
+     * the reservation and the saved data stay serial.
+     */
     private static void choose(SiteSearch job){
         ServerLevel level=job.level;BuenaVillageLayout layout=job.layout;
         long start=System.nanoTime();int attempts=0;Map<String,Integer> rejected=new TreeMap<>();
         BlockPos spawn=job.spawn;ChunkPos spawnChunk=new ChunkPos(spawn);
         NoiseTerrain hintTerrain=new NoiseTerrain(level,job);
         Map<String,List<BoundingBox>> nearbyStructures=new HashMap<>();
-        List<ChunkPos> sites=job.pairInitialSpawn?creationCandidates(level.getSeed()):candidates(level.getSeed());
-        if(job.pairInitialSpawn&&hintTerrain.generator.getClass()==net.minecraft.world.level.levelgen.NoiseBasedChunkGenerator.class){
+        boolean vanillaGenerator=hintTerrain.generator.getClass()==net.minecraft.world.level.levelgen.NoiseBasedChunkGenerator.class;
+        boolean fastPath=vanillaGenerator&&hintTerrain.generator.getBiomeSource().getClass()==net.minecraft.world.level.biome.MultiNoiseBiomeSource.class;
+        List<ChunkPos> grid=creationCandidates(level.getSeed());
+        int preferredCount=-1;long hintStart=System.nanoTime();
+        if(vanillaGenerator){
             List<ChunkPos> preferred=new ArrayList<>(),later=new ArrayList<>();
-            for(var offset:sites){job.checkTime();var at=new ChunkPos(spawnChunk.x+offset.x,spawnChunk.z+offset.z);
+            for(var offset:grid){job.check();var at=new ChunkPos(spawnChunk.x+offset.x,spawnChunk.z+offset.z);
                 boolean suitable=true;
                 for(int[] point:new int[][]{{0,0},{8,-39},{-41,-7}})
                     suitable&=hintTerrain.generator.getBiomeSource().getNoiseBiome(QuartPos.fromBlock(at.getMiddleBlockX()+point[0]),
@@ -187,76 +232,163 @@ public final class BuenaVillageGeneration {
             }
             // A climate hint is only a priority. The original fine-grid coverage and every exact
             // surface/biome/water/earthwork check remain; unusual vertical biomes are not discarded.
-            preferred.addAll(later);sites=preferred;
+            preferredCount=preferred.size();preferred.addAll(later);grid=preferred;
         }
-        int workers=hintTerrain.generator.getClass()==net.minecraft.world.level.levelgen.NoiseBasedChunkGenerator.class
-                &&hintTerrain.generator.getBiomeSource().getClass()==net.minecraft.world.level.biome.MultiNoiseBiomeSource.class
-                ?Math.max(1,Math.min(4,Runtime.getRuntime().availableProcessors()-2)):1;
+        long hintMillis=(System.nanoTime()-hintStart)/1_000_000;
+        BuenaSiteOrder order=new BuenaSiteOrder();
+        for(int i=0;i<grid.size();i++){
+            if((i&1023)==0)job.check();
+            order.add(BuenaSiteOrder.grid(spawnChunk,grid.get(i),preferredCount<0?-1:i<preferredCount?1:0));
+        }
+        job.total=order.size();
+        int automatic=fastPath?Math.max(1,Math.min(4,Runtime.getRuntime().availableProcessors()-2)):1;
+        int workers=Diagnostics.WORKERS>0?Diagnostics.WORKERS:automatic;
+        JoblessReincarnation.LOGGER.info("Buena survey setup: {} grid sites ({} first by the climate hint, ordered in {} ms); neighbours {} blocks apart within {} of a parent, at most {} per search; {} survey workers (automatic {}); {} path{}; generator {}, biome source {}",
+                order.size(),preferredCount,hintMillis,BuenaSiteOrder.STEP,BuenaSiteOrder.RADIUS,BuenaSiteOrder.CAP,workers,automatic,fastPath?"fast":"slow",
+                fastPath?" (whole order)":" (stops after "+SLOW_PATH_SAMPLE_CAP+" column requests)",hintTerrain.generator.getClass().getName(),
+                hintTerrain.generator.getBiomeSource().getClass().getName());
         ThreadLocal<NoiseTerrain> lanes=ThreadLocal.withInitial(()->new NoiseTerrain(level,job));
         ExecutorService pool=Executors.newFixedThreadPool(workers,r->{Thread t=new Thread(r,"Buena surface survey");t.setDaemon(true);return t;});
+        long samples=0;Trace trace=Trace.open();
+        java.util.function.Function<BuenaSiteOrder.Site,CompletableFuture<Survey>> survey=site->CompletableFuture.supplyAsync(()->{
+            var terrain=lanes.get();var chunk=site.chunk();int x=site.x(),z=site.z();
+            if(terrain.cache.size()>62500)terrain.cache.clear();
+            var cost=new Cost(terrain);
+            String reason=measured(job,"coarse",()->coarseSite(level,terrain,x,z),cost,0);
+            if(reason!=null)return new Survey(chunk,x,z,null,List.of(),reason,cost.done(terrain));
+            String[] failure={"plan_rejected"};
+            var plan=measured(job,"plan",()->BuenaVillagePlan.assess(level.getSeed(),x,z,spawn,layout,terrain,level.getMinBuildHeight(),level.getMaxBuildHeight(),r->failure[0]=r),cost,1);
+            if(plan==null)return new Survey(chunk,x,z,null,List.of(),failure[0],cost.done(terrain));
+            var choices=measured(job,"approach",()->BuenaVillageSpawn.candidates(plan,terrain),cost,2);
+            return new Survey(chunk,x,z,plan,choices,choices.isEmpty()?"no_dry_spawn_approach":null,cost.done(terrain));
+        },pool);
+        List<CompletableFuture<Survey>> futures=new ArrayList<>(Collections.nCopies(order.size(),(CompletableFuture<Survey>)null));
+        int window=workers*16;
         try{
-        for(int batch=0;batch<sites.size();batch+=workers*16){
-            job.checkTime();List<CompletableFuture<Survey>> tasks=new ArrayList<>();
-            for(int lane=0;lane<workers*16&&batch+lane<sites.size();lane++){
-                var offset=sites.get(batch+lane);
-                tasks.add(CompletableFuture.supplyAsync(()->{
-                    var terrain=lanes.get();var chunk=new ChunkPos(spawnChunk.x+offset.x,spawnChunk.z+offset.z);
-                    int x=chunk.getMiddleBlockX()-88,z=chunk.getMiddleBlockZ()-88;
-                    if(terrain.cache.size()>62500)terrain.cache.clear();
-                    String reason=!job.pairInitialSpawn&&!clearOfSpawn(x,z,spawn,100)?"spawn_clearance":measured(job,"coarse",()->coarseSite(level,terrain,x,z));
-                    if(reason!=null)return new Survey(chunk,x,z,null,List.of(),reason);
-                    String[] failure={"plan_rejected"};
-                    var plan=measured(job,"plan",()->BuenaVillagePlan.assess(level.getSeed(),x,z,spawn,layout,terrain,level.getMinBuildHeight(),level.getMaxBuildHeight(),r->failure[0]=r));
-                    if(plan==null)return new Survey(chunk,x,z,null,List.of(),failure[0]);
-                    var choices=job.pairInitialSpawn?measured(job,"approach",()->BuenaVillageSpawn.candidates(plan,terrain)):List.<ChunkPos>of();
-                    return new Survey(chunk,x,z,plan,choices,job.pairInitialSpawn&&choices.isEmpty()?"no_dry_spawn_approach":null);
-                },pool));
+        for(int i=0;i<order.size();i++){
+            job.check();
+            for(int j=i;j<order.size()&&j<i+window;j++)if(futures.get(j)==null)futures.set(j,survey.apply(order.get(j)));
+            long waitStart=trace.on()?System.nanoTime():0;
+            // Consume immutable results in candidate order, not completion order.
+            var scan=awaitSurvey(futures.get(i));
+            futures.set(i,CompletableFuture.completedFuture(null));
+            attempts++;job.checked=attempts;samples+=scan.cost().samples();
+            var site=order.get(i);
+            Trace.Line line=null;
+            if(trace.on()){long consumed=System.nanoTime();var centre=site.chunk();
+                line=new Trace.Line(attempts,centre.x-spawnChunk.x,centre.z-spawnChunk.z,site.group(),site.x(),site.z(),site.tag(),site.parent(),scan.cost(),consumed-waitStart,samples,consumed);}
+            String reason=scan.reason();
+            if(reason==null){
+                var chunk=scan.chunk();int x=scan.x(),z=scan.z();var plan=scan.plan();var spawnChoices=scan.choices();
+                long structuresStart=System.nanoTime();
+                boolean crowded=measured(job,"structures",()->nearOtherStructure(level,chunk,x,z,nearbyStructures));
+                if(line!=null)line.structures=System.nanoTime()-structuresStart;
+                if(crowded)reason="structure_clearance";
+                else{
+                    int count=attempts;long millis=(System.nanoTime()-start)/1_000_000;long mainStart=System.nanoTime();
+                    reason=onMain(job,()->{
+                        var data=BuenaVillageData.get(level);
+                        if(data==null||!data.eligible()||data.plan()!=null)return "reservation_conflict";
+                        if(!withinBorder(level,x,z))return "world_border";
+                        if(!unbuilt(level,plan))return "built_footprint";
+                        job.preparingSpawn=true;
+                        BlockPos initial;
+                        // Once a site has passed the survey, finish its bounded safe-spawn choices.
+                        try{initial=BuenaVillageSpawn.resolve(level,plan,spawnChoices,job::check);}
+                        finally{job.preparingSpawn=false;}
+                        if(initial==null)return "no_safe_spawn";
+                        if(!unbuilt(level,plan))return "spawn_requested_village_anchor";
+                        var chosen=plan.withSpawn(initial);
+                        // This final check, reservation, active handle and save are one server-thread operation.
+                        data.reserve(chosen,count,millis);
+                        data.recordInitialSpawn(job.spawn,initial);
+                        remember(level,layout,chosen);level.getDataStorage().save();
+                        JoblessReincarnation.LOGGER.info("Buena village reserved at {} (initial spawn {},{}), {} chunks; status {}",
+                                chosen.centre(),chosen.spawnX,chosen.spawnZ,chosen.chunkCount(),data.note());
+                        return null;
+                    });
+                    if(line!=null)line.main=System.nanoTime()-mainStart;
+                }
             }
-            // Consume immutable results in candidate order, not completion order. Workers only
-            // sample noise; structure checks, real chunks, reservation and saved data remain serial.
-            for(var task:tasks){
-                var scan=awaitSurvey(task);job.checkTime();attempts++;job.checked=attempts;
-                var chunk=scan.chunk();int x=scan.x(),z=scan.z();
-                if(scan.reason()!=null){count(rejected,scan.reason());continue;}
-                var plan=scan.plan();var spawnChoices=scan.choices();
-                if(measured(job,"structures",()->nearOtherStructure(level,chunk,x,z,nearbyStructures))){count(rejected,"structure_clearance");continue;}
-                int count=attempts;long millis=(System.nanoTime()-start)/1_000_000;
-                String reservationFailure=onMain(job,()->{
-                    var data=BuenaVillageData.get(level);
-                    if(data==null||!data.eligible()||data.plan()!=null)return "reservation_conflict";
-                    if(!withinBorder(level,x,z))return "world_border";
-                    if(!unbuilt(level,plan))return "built_footprint";
-                    job.preparingSpawn=true;
-                    BlockPos initial;
-                    // Once a site has passed the survey, finish its bounded safe-spawn choices.
-                    // Do not discard a valid village merely because native chunk preparation crosses the survey deadline.
-                    try{initial=job.pairInitialSpawn?BuenaVillageSpawn.resolve(level,plan,spawnChoices,job::check):null;}
-                    finally{job.preparingSpawn=false;}
-                    if(job.pairInitialSpawn&&initial==null)return "no_safe_spawn";
-                    if(job.pairInitialSpawn&&!unbuilt(level,plan))return "spawn_requested_village_anchor";
-                    var chosen=initial==null?plan:plan.withSpawn(initial);
-                    // This final check, reservation, active handle and save are one server-thread operation.
-                    data.reserve(chosen,count,millis);
-                    if(initial!=null)data.recordInitialSpawn(job.spawn,initial);
-                    remember(level,layout,chosen);level.getDataStorage().save();
-                    JoblessReincarnation.LOGGER.info("Buena village reserved at {} (initial spawn {},{}), {} chunks; status {}",
-                            chosen.centre(),chosen.spawnX,chosen.spawnZ,chosen.chunkCount(),data.note());
-                    return null;
-                });
-                if(reservationFailure!=null){count(rejected,reservationFailure);continue;}
-                JoblessReincarnation.LOGGER.info("Buena search accepted candidate {} after {} ms; prior rejections {}",attempts,(System.nanoTime()-start)/1_000_000,rejected);
+            if(reason==null){
+                trace.write(line,"accepted",start);
+                JoblessReincarnation.LOGGER.info("Buena search accepted candidate {} ({} at origin {},{}; centre {} blocks from the reference) after {} ms; prior rejections {}",
+                        attempts,site.tag(),site.x(),site.z(),Math.round(Math.hypot(site.x()+88-spawn.getX(),site.z()+88-spawn.getZ())),(System.nanoTime()-start)/1_000_000,rejected);
                 return;
-        }
+            }
+            count(rejected,reason);trace.write(line,reason,start);
+            var extra=order.rejected(i,reason,attempts,job::check);
+            if(!extra.isEmpty()){futures.addAll(i+1,Collections.nCopies(extra.size(),(CompletableFuture<Survey>)null));job.total=order.size();}
+            if(!fastPath&&samples>=SLOW_PATH_SAMPLE_CAP){
+                noSite(job,attempts,(System.nanoTime()-start)/1_000_000,"search_work_cap");
+                JoblessReincarnation.LOGGER.warn("Buena site search stopped at its slow-path work cap of {} column requests after {} sites; no village was placed. Rejections: {}",SLOW_PATH_SAMPLE_CAP,attempts,rejected);
+                return;
+            }
         }
         noSite(job,attempts,(System.nanoTime()-start)/1_000_000,"no_suitable_unbuilt_site");
-        JoblessReincarnation.LOGGER.warn("No suitable Buena village site found within the search radius; no village was placed. Rejections: {}",rejected);
-            }finally{pool.shutdownNow();try{pool.awaitTermination(5,TimeUnit.SECONDS);}catch(InterruptedException e){Thread.currentThread().interrupt();}
-                Map<String,Long> times=new TreeMap<>();job.timings.forEach((k,v)->times.put(k,v.sum()/1_000_000));
-                JoblessReincarnation.LOGGER.info("Buena survey work times in ms (worker stages summed): {}",times);}
+        JoblessReincarnation.LOGGER.warn("No suitable Buena village site found among {} sites ({} of them neighbours); no village was placed. Rejections: {}",order.size(),order.refined(),rejected);
+        }finally{pool.shutdownNow();try{pool.awaitTermination(5,TimeUnit.SECONDS);}catch(InterruptedException e){Thread.currentThread().interrupt();}
+            Map<String,Long> times=new TreeMap<>();job.timings.forEach((k,v)->times.put(k,v.sum()/1_000_000));
+            JoblessReincarnation.LOGGER.info("Buena survey work times in ms (worker stages summed): {}",times);
+            // Every outcome: 0.1.0 logged this tally only on success or after the whole list.
+            JoblessReincarnation.LOGGER.info("Buena survey consumed {} of {} sites ({} neighbours inserted) and {} column requests in {} ms; rejections {}",
+                    attempts,order.size(),order.refined(),samples,(System.nanoTime()-start)/1_000_000,rejected);
+            trace.close();}
     }
-    private record Survey(ChunkPos chunk,int x,int z,BuenaVillagePlan plan,List<ChunkPos> choices,String reason){}
+    private record Survey(ChunkPos chunk,int x,int z,BuenaVillagePlan plan,List<ChunkPos> choices,String reason,Cost.Spent cost){}
     private static <T>T measured(SiteSearch job,String stage,Supplier<T> work){long start=System.nanoTime();try{return work.get();}
         finally{job.timings.computeIfAbsent(stage,k->new java.util.concurrent.atomic.LongAdder()).add(System.nanoTime()-start);}}
+    /** The same stage total, and also this candidate's own share, measured on the worker that surveyed it. */
+    private static <T>T measured(SiteSearch job,String stage,Supplier<T> work,Cost cost,int slot){long start=System.nanoTime();try{return work.get();}
+        finally{long spent=System.nanoTime()-start;cost.nanos[slot]+=spent;
+            job.timings.computeIfAbsent(stage,k->new java.util.concurrent.atomic.LongAdder()).add(spent);}}
+    /** One candidate's survey cost. Samples count every column request, so they do not depend on which lane's cache was warm. */
+    private static final class Cost {
+        /** The worker starts this candidate when the Cost is made and finishes it in done(); both are System.nanoTime(). */
+        final long[] nanos=new long[3];final long samplesBefore,missesBefore,started=System.nanoTime();
+        Cost(NoiseTerrain terrain){samplesBefore=terrain.requests;missesBefore=terrain.misses;}
+        Spent done(NoiseTerrain terrain){return new Spent(nanos[0],nanos[1],nanos[2],terrain.requests-samplesBefore,terrain.misses-missesBefore,started,System.nanoTime());}
+        record Spent(long coarse,long plan,long approach,long samples,long misses,long started,long finished){}
+    }
+    /** Optional per-candidate CSV for development measurement; nothing is recorded unless -Djobless.buena.trace is set. */
+    private static final class Trace {
+        static final class Line {
+            final int index,dx,dz,preferred,originX,originZ,parent;final String tag;final Cost.Spent cost;final long waited,samplesTotal,consumed;
+            long structures,main;
+            /** dx/dz: the chunk offset of the village centre from the reference chunk; consumed: System.nanoTime() after the wait. */
+            Line(int index,int dx,int dz,int preferred,int originX,int originZ,String tag,int parent,Cost.Spent cost,long waited,long samplesTotal,long consumed){
+                this.index=index;this.dx=dx;this.dz=dz;this.preferred=preferred;this.originX=originX;this.originZ=originZ;this.tag=tag;this.parent=parent;
+                this.cost=cost;this.waited=waited;this.samplesTotal=samplesTotal;this.consumed=consumed;
+            }
+        }
+        /** Null when tracing is off. */
+        private final java.io.Writer out;
+        private Trace(java.io.Writer out){this.out=out;}
+        boolean on(){return out!=null;}
+        static Trace open(){
+            if(Diagnostics.TRACE==null)return new Trace(null);
+            try{
+                var path=java.nio.file.Path.of(Diagnostics.TRACE).toAbsolutePath();
+                java.nio.file.Files.createDirectories(path.getParent());
+                var out=java.nio.file.Files.newBufferedWriter(path,java.nio.charset.StandardCharsets.UTF_8);
+                out.write("index,dx,dz,distance_chunks,preferred,result,coarse_ms,plan_ms,approach_ms,samples,new_columns,wait_ms,structures_ms,main_ms,elapsed_ms,samples_total"
+                        +",origin_x,origin_z,tag,parent,started_ms,finished_ms,consumed_ms\n");
+                return new Trace(out);
+            }catch(java.io.IOException e){JoblessReincarnation.LOGGER.warn("Buena survey trace not written: {}",e.toString());return new Trace(null);}
+        }
+        /** Does nothing when tracing is off (line is then null). */
+        void write(@Nullable Line l,String result,long searchStart){
+            if(out==null||l==null)return;
+            try{out.write(String.format(java.util.Locale.ROOT,"%d,%d,%d,%.1f,%d,%s,%.3f,%.3f,%.3f,%d,%d,%.3f,%.3f,%.3f,%d,%d",
+                    l.index,l.dx,l.dz,Math.sqrt((double)l.dx*l.dx+(double)l.dz*l.dz),l.preferred,result,
+                    l.cost.coarse()/1e6,l.cost.plan()/1e6,l.cost.approach()/1e6,l.cost.samples(),l.cost.misses(),
+                    l.waited/1e6,l.structures/1e6,l.main/1e6,(System.nanoTime()-searchStart)/1_000_000,l.samplesTotal)
+                    +String.format(java.util.Locale.ROOT,",%d,%d,%s,%d,%.3f,%.3f,%.3f",l.originX,l.originZ,l.tag,l.parent,
+                    (l.cost.started()-searchStart)/1e6,(l.cost.finished()-searchStart)/1e6,(l.consumed-searchStart)/1e6)+"\n");}
+            catch(java.io.IOException e){JoblessReincarnation.LOGGER.warn("Buena survey trace line lost: {}",e.toString());}
+        }
+        void close(){if(out!=null)try{out.close();}catch(java.io.IOException ignored){}}
+    }
     private static Survey awaitSurvey(CompletableFuture<Survey> task){
         try{return task.join();}catch(CompletionException e){if(e.getCause() instanceof RuntimeException r)throw r;throw e;}
     }
@@ -274,7 +406,7 @@ public final class BuenaVillageGeneration {
             try{return result.get(100,TimeUnit.MILLISECONDS);}
             catch(TimeoutException waiting){}
             catch(InterruptedException stopped){Thread.currentThread().interrupt();throw new CancellationException();}
-            catch(ExecutionException failed){if(failed.getCause() instanceof SearchDeadline expired)throw expired;throw new IllegalStateException(failed.getCause());}
+            catch(ExecutionException failed){throw new IllegalStateException(failed.getCause());}
         }
     }
     /** Dense near-spawn coverage, thinning farther out; unlike a few radial rays this does not skip whole valleys. */
@@ -390,13 +522,15 @@ public final class BuenaVillageGeneration {
         final SiteSearch job;
         final BuenaVillagePlan.Terrain surface;
         final Map<Long,BuenaVillagePlan.Column> cache=new HashMap<>();
+        /** Diagnostics only: column requests and the columns actually sampled. Each lane stays on one worker thread. */
+        long requests,misses;
         NoiseTerrain(ServerLevel level,SiteSearch job){
             this.level=level;this.job=job;generator=level.getChunkSource().getGenerator();random=level.getChunkSource().randomState();
             surface=BuenaSurfaceSampler.create(generator,level,random);
         }
         @Override public BuenaVillagePlan.Column at(int x,int z){
-            job.checkTime();
-            return cache.computeIfAbsent(ChunkPos.asLong(x,z),key->surface.at(x,z));
+            job.check();requests++;
+            return cache.computeIfAbsent(ChunkPos.asLong(x,z),key->{misses++;return surface.at(x,z);});
         }
     }
     @SubscribeEvent public static void chunkLoaded(ChunkEvent.Load event){
