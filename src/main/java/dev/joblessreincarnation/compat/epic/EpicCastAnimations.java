@@ -43,13 +43,14 @@ public final class EpicCastAnimations {
         event.newBuilder(JoblessReincarnation.MOD_ID,builder->{
             SETS.clear();
             for(var spell:SpellCatalog.values()) {
+                if(spell==SpellCatalog.ICICLE_FIELD) continue;
                 String prefix=spell==SpellCatalog.WATER_BOLT?"v01/player/water":"v02/player/"+spell.id().getPath();
                 var chant=builder.nextAccessor(prefix+"_chant",key->upper(false,key));
                 var hold=builder.nextAccessor(prefix+"_hold",key->upper(true,key));
                 var release=builder.nextAccessor(prefix+"_release",key->upper(false,key));
                 SETS.put(spell,new Clips(spell,chant,hold,release));
             }
-            var water=SETS.get(SpellCatalog.WATER_BOLT);CHANT=water.chant();HOLD=water.hold();RELEASE=water.release();
+            var water=SETS.get(SpellCatalog.WATER_BOLT);SETS.put(SpellCatalog.ICICLE_FIELD,new Clips(SpellCatalog.ICICLE_FIELD,water.chant(),water.hold(),water.release()));CHANT=water.chant();HOLD=water.hold();RELEASE=water.release();
             NpcEpicAnimations.register(builder);
             SchoolAnimations.register(builder);
             RastaBearCombat.animations(builder);

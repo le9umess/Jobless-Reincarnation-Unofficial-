@@ -338,19 +338,18 @@ public final class MultiplayerSpellProbe {
                     LivingEntity entity = airEntity(current, sample.id());
                     require(entity.getHealth() == sample.health(), "Air release must not directly damage any target");
                     if (sample.pushed()) require(entity.getDeltaMovement().z > 0.1 && entity.getDeltaMovement().horizontalDistanceSqr() > 0.01,
-                            "Both clear hostile targets must acquire real southward motion");
+                            "Both visible hostiles and the cow must acquire southward motion");
                     else require(entity.getDeltaMovement().lengthSqr() < 0.000001,
-                            "Occluded hostile target and ordinary animal must not acquire motion");
+                            "The occluded hostile must not acquire motion");
                 }
-                require(peer.getHealth() == current.airPeerHealth && peer.position().distanceToSqr(current.airPeerPosition) < 0.0001
-                        && peer.getDeltaMovement().horizontalDistanceSqr() < 0.000001,
-                        "Ordinary observer player must not be pushed");
+                require(peer.getHealth() == current.airPeerHealth && peer.getDeltaMovement().z > 0.1 && peer.hurtMarked,
+                        "The in-cone player must receive a synchronised southward impulse without health loss");
                 current.airReleased = true; current.airReleaseTick = current.ticks;
                 freezeMana(host); sync(host); sync(peer);
-                LOGGER.info("{} AIR_RELEASE_PASS: real staff use/release; mana {}->{}, host air 0->1, no direct damage, two hostile impulses, occluded hostile/cow/player retained; not manual mouse", PREFIX, before, host.getData(ModAttachments.MANA).mana());
+                LOGGER.info("{} AIR_RELEASE_PASS: real staff use/release; mana {}->{}, host air 0->1, visible husks/cow/player pushed without damage, occluded husk protected", PREFIX, before, host.getData(ModAttachments.MANA).mana());
             } else if (current.phase == 8 && current.airReleased && current.ticks - current.airReleaseTick >= 4) {
                 freezeAirTargets(current, peer);
-                phase(current, 9, "air release: real tracked hostile displacement; occluded hostile/cow/player unchanged; native near-pulse frame");
+                phase(current, 9, "air release: visible husks, cow and player displaced; occluded husk unchanged; native near-pulse frame");
             } else if (current.phase == 9 && bothAcked(current)) {
                 prepareHealing(current, host, peer);
                 phase(current, 10, "healing selected only by host; host health 10, observer health 12; natural regeneration temporarily disabled");
@@ -514,6 +513,8 @@ public final class MultiplayerSpellProbe {
     }
 
     private static void prepareAir(Session current, ServerPlayer host, ServerPlayer peer) throws Exception {
+        current.server.setPvpAllowed(true);
+        require(host.canHarmPlayer(peer), "Use two test players with friendly fire allowed for the air scene");
         current.server.getGameRules().getRule(GameRules.RULE_DOMOBSPAWNING).set(false, current.server);
         current.server.setDifficulty(Difficulty.EASY, true);
         BlockPos barrier = current.center;
@@ -534,7 +535,7 @@ public final class MultiplayerSpellProbe {
                 createAirMob(current, EntityType.HUSK, new Vec3(x - 1.0, y, z + 2.7), true),
                 createAirMob(current, EntityType.HUSK, new Vec3(x + 1.0, y, z + 2.7), true),
                 createAirMob(current, EntityType.HUSK, new Vec3(x, y, z + 5.0), false),
-                createAirMob(current, EntityType.COW, new Vec3(x, y, z + 3.0), false));
+                createAirMob(current, EntityType.COW, new Vec3(x, y, z + 3.0), true));
         journal(current, false); // Journal UUIDs and original block states before adding anything to the world.
         for (BlockPos pos : current.temporaryBlocks.keySet()) host.serverLevel().setBlock(pos, Blocks.STONE.defaultBlockState(), Block.UPDATE_ALL);
         for (Mob mob : mobs) {
@@ -576,18 +577,20 @@ public final class MultiplayerSpellProbe {
             LivingEntity entity = airEntity(current, sample.id());
             require(entity.getHealth() == sample.health(), "Temporary targets must retain original health after release");
             if (sample.pushed()) require(entity.getZ() - sample.original().z > 0.15,
-                    "Two ordinary tracked hostiles must physically move south after the impulse");
+                    "Visible hostiles and the cow must physically move south after the impulse");
             else require(entity.position().distanceToSqr(sample.original()) < 0.0001,
-                    "Occluded hostile and ordinary animal must remain at their original positions");
+                    "The occluded hostile must remain at its original position");
             entity.setDeltaMovement(Vec3.ZERO); entity.hurtMarked = true;
             current.airEntities.put(sample.id(), new EntitySample(sample.id(), sample.original(), entity.position(), sample.health(), sample.pushed()));
         }
-        require(peer.getHealth() == current.airPeerHealth && peer.position().distanceToSqr(current.airPeerPosition) < 0.0001,
-                "The in-cone observer player must retain their position");
-        LOGGER.info("{} AIR_PHYSICS_PASS: four real server ticks produced two hostile displacements, occluded hostile/cow/player unchanged, all four target health values unchanged", PREFIX);
+        require(peer.getHealth() == current.airPeerHealth, "The observer must retain full health");
+        LOGGER.info("{} AIR_PHYSICS_PASS: visible husks and cow displaced, occluded husk unchanged; awaiting both clients' player movement receipts", PREFIX);
     }
 
     private static void prepareHealing(Session current, ServerPlayer host, ServerPlayer peer) throws Exception {
+        require(peer.getZ() - current.airPeerPosition.z > 0.15, "Player displacement reached the server by the time both clients confirmed it");
+        Vec3 start = current.airPeerPosition;
+        peer.teleportTo(peer.serverLevel(), start.x, start.y, start.z, 0, 0);
         journal(current, false); // Original gamerules and both full player NBT snapshots already exist before health changes.
         current.server.getGameRules().getRule(GameRules.RULE_NATURAL_REGENERATION).set(false, current.server);
         host.setHealth(10.0F); peer.setHealth(12.0F);

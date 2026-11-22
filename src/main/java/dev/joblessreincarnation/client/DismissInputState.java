@@ -78,10 +78,12 @@ public final class DismissInputState {
         if (phase == Phase.PREPARING) {
             if (!SpellKeys.DISMISS.isDown()) { finishLocal(false); return; }
             phase = Phase.REQUESTED;
+            dev.joblessreincarnation.client.combat.StaffAim.syncNow(minecraft, minecraft.player, "dismiss_begin");
             PacketDistributor.sendToServer(new DismissPayload(nonce, DismissPayload.BEGIN));
         } else if (!SpellKeys.DISMISS.isDown() && phase != Phase.RELEASING) {
             phase = Phase.RELEASING;
             StaffInput.requireUseRelease();
+            dev.joblessreincarnation.client.combat.StaffAim.syncNow(minecraft, minecraft.player, "dismiss_release");
             PacketDistributor.sendToServer(new DismissPayload(nonce, DismissPayload.RELEASE));
         }
     }

@@ -170,8 +170,14 @@ public final class FireFocusGameTests {
     @GameTest(template="empty")
     public static void shallowWaterHandednessPitchAndUnloadedAreaAreHandled(GameTestHelper h){
         try(Fixture f=new Fixture(h)){
+            // Epic Fight starts every player in its combat mode, where its own model draws the staff in the right hand.
+            var patch=yesman.epicfight.world.capabilities.EpicFightCapabilities.getPlayerPatch(f.p);
+            if(patch!=null)patch.toVanillaMode(false);
             Vec3 right=FireFocusEffects.visibleFocus(f.p).orElseThrow();f.p.setMainArm(HumanoidArm.LEFT);
-            Vec3 left=FireFocusEffects.visibleFocus(f.p).orElseThrow();h.assertTrue(right.x<f.p.getX()&&left.x>f.p.getX(),"Handedness mirrors focus side");
+            Vec3 left=FireFocusEffects.visibleFocus(f.p).orElseThrow();h.assertTrue(right.x<f.p.getX()&&left.x>f.p.getX(),"Handedness mirrors focus side with the vanilla model");
+            if(patch!=null){patch.toEpicFightMode(false);
+                h.assertTrue(FireFocusEffects.visibleFocus(f.p).orElseThrow().x<f.p.getX(),"In Epic Fight's combat mode the focus follows its right-hand staff, left-handed or not");
+                patch.toVanillaMode(false);}
             BlockPos pos=BlockPos.containing(left);h.getLevel().setBlockAndUpdate(pos,Blocks.WATER.defaultBlockState().setValue(LiquidBlock.LEVEL,7));
             h.assertTrue(FireFocusEffects.visibleFocus(f.p).isPresent(),"Focus above a shallow actual water surface remains visible");
             h.getLevel().setBlockAndUpdate(pos,Blocks.AIR.defaultBlockState());f.p.setXRot(-90);

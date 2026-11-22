@@ -294,8 +294,10 @@ public final class MultiplayerSpellProbeClient {
         if (check.phase() >= 7 && check.phase() <= 9) {
             var observer = MultiplayerSpellProbe.observer() ? player : peer;
             // Compare ordinary tracked state to the one immutable server baseline. Never snapshot an interpolating remote teleport.
-            if (observer == null || observer.position().distanceToSqr(check.observerOriginal()) > 0.0064
-                    || Math.abs(observer.getHealth() - check.observerHealth()) > 0.001) {
+            boolean expectedPosition = observer != null && (check.phase() == 9
+                    ? observer.getZ() - check.observerOriginal().z > 0.15
+                    : observer.position().distanceToSqr(check.observerOriginal()) <= 0.0064);
+            if (!expectedPosition || Math.abs(observer.getHealth() - check.observerHealth()) > 0.001) {
                 String detail = "ordinary observer position/health mismatch: actual="
                         + (observer == null ? "missing" : observer.position() + "/" + observer.getHealth())
                         + ", original=" + check.observerOriginal() + "/" + check.observerHealth();

@@ -158,6 +158,7 @@ public final class FireBallProjectile extends Projectile {
                         && level().getBlockState(blockHit.getBlockPos()).is(Blocks.TARGET);
                 float radius = 0;
                 if (!quenched && !EventHooks.onProjectileImpact(this, hit) && !isRemoved()) {
+                    IcicleFields.heatAt((ServerLevel)level(),hit.getLocation(),getOwner());
                     if (hit instanceof EntityHitResult entityHit) damageTarget(entityHit.getEntity());
                     else if (hitWasTarget && hit instanceof BlockHitResult blockHit) {
                         trainingImpact = blockHit;
@@ -184,7 +185,7 @@ public final class FireBallProjectile extends Projectile {
         float health = target.getHealth(), absorption = target.getAbsorptionAmount();
         boolean accepted = target.hurt(damageSources().source(DamageTypes.FIREBALL, this, caster), damage());
         boolean actuallyDamaged = accepted && (target.getHealth() < health || target.getAbsorptionAmount() < absorption);
-        if (actuallyDamaged) AttackSpellImpact.applyDebuff(caster, target, SpellCatalog.FIRE_BALL, formStage());
+        if (actuallyDamaged) { IcicleWet.dry(target); AttackSpellImpact.applyDebuff(caster, target, SpellCatalog.FIRE_BALL, formStage()); }
         if (formStage() < 2 && actuallyDamaged && target.isAlive() && !target.isRemoved() && target.level() == level()
                 && !target.fireImmune() && !target.hasEffect(MobEffects.FIRE_RESISTANCE)
                 && !target.isInWaterRainOrBubble() && burnSeconds > 0) target.igniteForSeconds(burnSeconds);

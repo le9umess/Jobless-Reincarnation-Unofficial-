@@ -161,6 +161,9 @@ public final class ModContent {
             EntityType.Builder.<StoneCannonProjectile>of(StoneCannonProjectile::new, MobCategory.MISC).sized(.375F, .375F)
                     .clientTrackingRange(10).updateInterval(1).noSave().build(JoblessReincarnation.MOD_ID + ":stone_cannon"));
 
+    public static final DeferredHolder<EntityType<?>, EntityType<dev.joblessreincarnation.magic.IcicleFieldEntity>> ICICLE_FIELD = ENTITIES.register("icicle_field", () ->
+            EntityType.Builder.<dev.joblessreincarnation.magic.IcicleFieldEntity>of(dev.joblessreincarnation.magic.IcicleFieldEntity::new, MobCategory.MISC).sized(6F,.05F).clientTrackingRange(10).updateInterval(1).noSave().build(JoblessReincarnation.MOD_ID+":icicle_field"));
+
     public static final DeferredHolder<EntityType<?>, EntityType<MireEntity>> MIRE = ENTITIES.register("mire", () ->
             EntityType.Builder.<MireEntity>of(MireEntity::new, MobCategory.MISC).sized(5.0F, 0.05F)
                     .clientTrackingRange(10).updateInterval(1).noSave().build(JoblessReincarnation.MOD_ID + ":mire"));

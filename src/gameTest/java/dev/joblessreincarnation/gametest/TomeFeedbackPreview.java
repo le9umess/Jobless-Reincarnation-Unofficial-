@@ -43,8 +43,9 @@ public final class TomeFeedbackPreview {
     public static volatile Consumer<State> clientReceiver=ignored->{};
     public static boolean enabled(){return Boolean.getBoolean("jobless_reincarnation.tomeFeedbackProbe");}
     public static SpellCatalog spell(int phase){return switch(phase){case 2,7->SpellCatalog.WATER_BOLT;case 3->SpellCatalog.EARTH_WALL;case 4->SpellCatalog.AIR_BURST;case 5->SpellCatalog.HEALING;default->SpellCatalog.FIRE_BALL;};}
-    public static Item tome(int phase){return switch(spell(phase)){case WATER_BOLT->ModContent.WATER_TOME.get();case EARTH_WALL->ModContent.EARTH_TOME.get();case AIR_BURST->ModContent.AIR_TOME.get();case HEALING->ModContent.HEALING_TOME.get();case FIRE_BALL->ModContent.FIRE_TOME.get();case WATER_SHIELD->ModContent.WATER_SHIELD_TOME.get();case MIRE->ModContent.MIRE_TOME.get();case STONE_CANNON->ModContent.STONE_CANNON_TOME.get();};}
-    public static String knownKey(int phase){return "message.jobless_reincarnation."+switch(spell(phase)){case WATER_BOLT->"already_learned";case EARTH_WALL->"earth_already_learned";case AIR_BURST->"air_already_learned";case HEALING->"healing_already_learned";case FIRE_BALL->"fire_already_learned";case WATER_SHIELD->"water_shield.already_learned";case MIRE->"mire.already_learned";case STONE_CANNON->"stone_cannon.already_learned";};}
+    private static SpellCatalog[] bookSpells(){return java.util.Arrays.stream(SpellCatalog.values()).filter(v->v.tomeItem()!=null).toArray(SpellCatalog[]::new);}
+    public static Item tome(int phase){return switch(spell(phase)){case WATER_BOLT->ModContent.WATER_TOME.get();case EARTH_WALL->ModContent.EARTH_TOME.get();case AIR_BURST->ModContent.AIR_TOME.get();case HEALING->ModContent.HEALING_TOME.get();case FIRE_BALL->ModContent.FIRE_TOME.get();case WATER_SHIELD->ModContent.WATER_SHIELD_TOME.get();case MIRE->ModContent.MIRE_TOME.get();case STONE_CANNON->ModContent.STONE_CANNON_TOME.get();case ICICLE_FIELD->throw new IllegalArgumentException("No tome");};}
+    public static String knownKey(int phase){return "message.jobless_reincarnation."+switch(spell(phase)){case WATER_BOLT->"already_learned";case EARTH_WALL->"earth_already_learned";case AIR_BURST->"air_already_learned";case HEALING->"healing_already_learned";case FIRE_BALL->"fire_already_learned";case WATER_SHIELD->"water_shield.already_learned";case MIRE->"mire.already_learned";case STONE_CANNON->"stone_cannon.already_learned";case ICICLE_FIELD->throw new IllegalArgumentException("No tome");};}
     public record State(int phase,int holdTicks,boolean floor,boolean passed,String detail) implements CustomPacketPayload {
         public static final Type<State> TYPE=new Type<>(ResourceLocation.fromNamespaceAndPath(JoblessReincarnation.MOD_ID,"dev_tome_feedback_state"));
         public static final StreamCodec<FriendlyByteBuf,State> CODEC=CustomPacketPayload.codec(State::write,State::new);
@@ -95,7 +96,7 @@ public final class TomeFeedbackPreview {
         journal(s,false);
         s.server.getGameRules().getRule(GameRules.RULE_DOMOBSPAWNING).set(false,s.server);s.server.getGameRules().getRule(GameRules.RULE_NATURAL_REGENERATION).set(false,s.server);s.server.getGameRules().getRule(GameRules.RULE_KEEPINVENTORY).set(true,s.server);s.level.setDayTime(6000);
         p.closeContainer();SpellCasting.openJournal(p);p.removeAllEffects();p.setGameMode(GameType.SURVIVAL);p.getInventory().clearContent();p.setHealth(p.getMaxHealth());p.getFoodData().setFoodLevel(10);p.getFoodData().setSaturation(0);p.getFoodData().setExhaustion(0);
-        MagicKnowledge knowledge=new MagicKnowledge();for(SpellCatalog spell:SpellCatalog.values())if(spell!=SpellCatalog.FIRE_BALL)knowledge.learn(spell.id());
+        MagicKnowledge knowledge=new MagicKnowledge();for(SpellCatalog spell:bookSpells())if(spell!=SpellCatalog.FIRE_BALL)knowledge.learn(spell.id());
         p.setData(ModAttachments.KNOWLEDGE,knowledge);p.setData(ModAttachments.CASTING,new CastingData());p.setData(ModAttachments.MANA,new ManaData(100,100,6000,0));
         p.teleportTo(s.level,POSITION.x,POSITION.y,POSITION.z,0,0);p.setDeltaMovement(Vec3.ZERO);p.fallDistance=0;
         LogUtils.getLogger().info("[JR_TOME_FEEDBACK_PREVIEW] EXPLICIT_SEED water/earth/air/healing learned; FIRE remains unknown; food=10; no practice/rewards granted");
@@ -114,7 +115,7 @@ public final class TomeFeedbackPreview {
             require(FireMagic.isLearned(p),"Real fire study was not committed");require(!p.isUsingItem(),"No residual item use after hold release");require(p.getFoodData().getFoodLevel()==10,"Offhand food must remain uneaten");
             var after=inventory(p);for(int i=0;i<after.size();i++)require(ItemStack.matches(s.inventory.get(i),after.get(i)),"Inventory changed at slot "+i);
             for(var entry:s.blocks.entrySet())require(s.level.getBlockState(entry.getKey()).equals(entry.getValue()),"Offhand torch unexpectedly placed at "+entry.getKey());
-            for(SpellCatalog spell:SpellCatalog.values())require(spell.knows(p)&&spell.practiceCount(p)==0,"Study fixture must not practice or erase another spell");
+            for(SpellCatalog spell:bookSpells())require(spell.knows(p)&&spell.practiceCount(p)==0,"Study fixture must not practice or erase another spell");
             LogUtils.getLogger().info("[JR_TOME_FEEDBACK_PREVIEW] PHASE_PASS {} overlays={} swings={} usePackets={} offhand={} {}",a.phase(),a.overlays(),a.swings(),a.uses(),a.offhand(),a.detail());
             if(s.phase==7)finish(s,true,"7 native feedback phases passed; fire naturally learned, four spells explicitly seeded");else phase(s,p,s.phase+1);
         }catch(Exception ex){finish(s,false,ex.toString());}

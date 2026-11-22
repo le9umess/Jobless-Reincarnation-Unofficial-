@@ -15,9 +15,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.OwnableEntity;
-import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.AABB;
@@ -60,14 +57,8 @@ public final class AirBurstSpell {
     }
 
     static boolean eligible(ServerPlayer player, LivingEntity target) {
-        if (!dev.joblessreincarnation.encounter.PaulDuel.mayAffect(player,target)) return false;
-        if (dev.joblessreincarnation.encounter.PaulDuel.spellTarget(player,target)) return !target.isPassenger() && !target.isVehicle();
-        return target instanceof Mob && target instanceof Enemy && target.level() == player.level()
-                && target.isAlive() && !target.isRemoved() && !target.isSpectator() && !target.isInvulnerable()
-                && target.isPushable() && !target.isPassenger() && !target.isVehicle()
-                && !target.getType().is(IMMUNE)
-                && !(target instanceof OwnableEntity owned && owned.getOwnerUUID() != null)
-                && !player.isAlliedTo(target) && !target.isAlliedTo(player);
+        return ControlSpellTargets.canAffect(player, target) && !target.isPassenger()
+                && !target.getType().is(IMMUNE);
     }
 
     /** The same center defines range, cone and obstruction; no target ray requests an unloaded chunk. */
@@ -92,13 +83,13 @@ public final class AirBurstSpell {
                 && visible(player, target.getBoundingBox().getCenter());
     }
 
-    static List<Mob> targets(ServerPlayer player) {
+    static List<LivingEntity> targets(ServerPlayer player) {
         Vec3 eye = player.getEyePosition();
-        return player.serverLevel().getEntitiesOfClass(Mob.class,
+        return player.serverLevel().getEntitiesOfClass(LivingEntity.class,
                 new AABB(eye, eye).inflate(MagicConfig.AIR_BURST_RANGE.getAsInt()),
                 target -> eligible(player, target) && inPulse(player, target)).stream()
-                .sorted(Comparator.comparingDouble((Mob target) -> target.getBoundingBox().getCenter().distanceToSqr(eye))
-                        .thenComparingInt(Mob::getId))
+                .sorted(Comparator.comparingDouble((LivingEntity target) -> target.getBoundingBox().getCenter().distanceToSqr(eye))
+                        .thenComparingInt(LivingEntity::getId))
                 .limit(MagicConfig.AIR_BURST_MAX_TARGETS.getAsInt()).toList();
     }
 
@@ -108,7 +99,7 @@ public final class AirBurstSpell {
     }
     static boolean cast(ServerPlayer player, SpellPayment mode) {
         if (!canBeginCast(player, mode)) return false;
-        List<Mob> targets = targets(player);
+        List<LivingEntity> targets = targets(player);
         boolean creative = player.getAbilities().instabuild;
         int cooldown = MagicConfig.AIR_BURST_COOLDOWN.getAsInt();
         ManaData mana = ManaGrowth.prepare(player);
@@ -128,10 +119,14 @@ public final class AirBurstSpell {
                         Component.translatable("spell.jobless_reincarnation.air_burst"), stage.title()), true);
             }
         }
-        for (Mob target : targets) {
-            // A previous target's hook can remove, tame, relocate or mount later targets.
-            if (eligible(player, target) && inPulse(player, target)) target.knockback(MagicConfig.AIR_BURST_STRENGTH.get(),
+        for (LivingEntity target : targets) {
+            // Recheck after earlier knockback hooks. A target may have moved or gained protection.
+            if (!eligible(player, target) || !inPulse(player, target)) continue;
+            Vec3 before = target.getDeltaMovement();
+            target.knockback(MagicConfig.AIR_BURST_STRENGTH.get(),
                     player.getX() - target.getX(), player.getZ() - target.getZ());
+            if (target instanceof ServerPlayer && !target.getDeltaMovement().equals(before))
+                target.hurtMarked = true; // Send the impulse to the controlling client as well as observers.
         }
         pulseEffects(player);
         return true;

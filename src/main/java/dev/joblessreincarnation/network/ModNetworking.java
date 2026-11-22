@@ -10,7 +10,7 @@ import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 public final class ModNetworking {
     public static void register(RegisterPayloadHandlersEvent event) {
         // PayloadRegistrar defaults to the logical main thread.
-        var registrar = event.registrar("31"); // 0.1.0, the first public release. "30" was its first playtest package (boss bars, burst kinds and naming changed since); development packages used other values.
+        var registrar = event.registrar("32"); // 0.2.0-dev1: Icicle Field's course and payloads (the brass HUD is client-only). 0.1.0, the first public release, is "31"; "30" was its first playtest package; other development packages used other values.
         registrar.playToClient(BossBarPayload.TYPE, BossBarPayload.STREAM_CODEC, (payload, context) -> payload.applyClient());
         registrar.playToClient(RemoveBossBarPayload.TYPE, RemoveBossBarPayload.STREAM_CODEC, (payload, context) -> payload.applyClient());
         registrar.playToServer(NamingAnswerPayload.TYPE, NamingAnswerPayload.STREAM_CODEC, (payload, context) -> {

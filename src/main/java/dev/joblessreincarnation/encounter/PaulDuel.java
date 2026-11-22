@@ -335,6 +335,9 @@ public final class PaulDuel {
         Bout b=bout(paul);if(b==null||!b.active()||source.getEntity()!=b.player||!valid(b))return false;
         if(meleeSource(b,source))return true;
         if(b.phase!=1)return false;
+        if(source.is(DamageTypes.FREEZE)&&source.getDirectEntity() instanceof dev.joblessreincarnation.magic.IcicleFieldEntity ice)
+            return ice.owner()==b.player&&dev.joblessreincarnation.magic.IcicleFields.registered(ice)&&ice.activeAt(b.level.getGameTime())
+                &&spellTarget(b.player,paul)&&dev.joblessreincarnation.magic.IcicleFields.touches(ice,paul);
         if(source.getDirectEntity() instanceof Projectile projectile)return b.projectiles.contains(projectile)
                 &&(projectile instanceof WaterBolt||projectile instanceof FireBallProjectile||projectile instanceof StoneCannonProjectile);
         return source.is(DamageTypes.ON_FIRE)&&paul.hasData(ModAttachments.SEARING)
@@ -415,6 +418,7 @@ public final class PaulDuel {
         for(Projectile p:new ArrayList<>(b.projectiles))if(!p.isRemoved())p.discard();b.projectiles.clear();
     }
     private static void clearFields(Bout b){
+        dev.joblessreincarnation.magic.IcicleFields.endOwner(b.player);
         var box=b.paul.getBoundingBox().inflate(32);
         for(MireEntity e:b.level.getEntitiesOfClass(MireEntity.class,box,e->b.player.getUUID().equals(e.ownerId())))e.discard();
         for(WaterShieldEntity e:b.level.getEntitiesOfClass(WaterShieldEntity.class,box,e->b.player.getUUID().equals(e.ownerId())))e.discard();

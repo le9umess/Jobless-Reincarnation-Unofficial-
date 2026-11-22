@@ -112,7 +112,7 @@ public final class ManaGrowthSpellGameTests {
     private static void deplete(GameTestHelper h, SpellCatalog spell) {
         Caster caster = caster(h);
         if (spell == SpellCatalog.EARTH_WALL) wallSite(h, caster);
-        if (spell == SpellCatalog.MIRE) {
+        if (spell == SpellCatalog.MIRE || spell == SpellCatalog.ICICLE_FIELD) {
             caster.setPos(h.absoluteVec(new Vec3(8.5, 2, 3.5)));
             aim(caster, h.absoluteVec(new Vec3(8.5, 2, 8.5)));
         }
@@ -488,7 +488,7 @@ public final class ManaGrowthSpellGameTests {
         for (SpellCatalog spell : SpellCatalog.values()) {
             Caster p = caster(h); p.getAbilities().instabuild = true;
             if (spell == SpellCatalog.EARTH_WALL) wallSite(h, p);
-            if (spell == SpellCatalog.MIRE) {
+            if (spell == SpellCatalog.MIRE || spell == SpellCatalog.ICICLE_FIELD) {
                 BlockPos center = new BlockPos(11, 2, 5);
                 for (BlockPos offset : MireEntity.CELL_OFFSETS) {
                     BlockPos feet = center.offset(offset);

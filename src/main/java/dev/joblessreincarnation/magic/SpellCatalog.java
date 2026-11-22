@@ -12,13 +12,13 @@ import org.jetbrains.annotations.Nullable;
 
 /** Fixed display/cycle order. Knowledge and practice belong to the player, never the wand. */
 public enum SpellCatalog {
-    WATER_BOLT("water_bolt"), WATER_SHIELD("water_shield"), EARTH_WALL("earth_wall"), AIR_BURST("air_burst"), HEALING("healing"), FIRE_BALL("fire_ball"), MIRE("mire"), STONE_CANNON("stone_cannon");
+    WATER_BOLT("water_bolt"), WATER_SHIELD("water_shield"), EARTH_WALL("earth_wall"), AIR_BURST("air_burst"), HEALING("healing"), FIRE_BALL("fire_ball"), MIRE("mire"), STONE_CANNON("stone_cannon"), ICICLE_FIELD("icicle_field");
 
     private final ResourceLocation id;
     SpellCatalog(String path) { id = ResourceLocation.fromNamespaceAndPath(JoblessReincarnation.MOD_ID, path); }
     public ResourceLocation id() { return id; }
     public Component title() { return Component.translatable("spell.jobless_reincarnation." + id.getPath()); }
-    public Item tomeItem() {
+    @Nullable public Item tomeItem() {
         return switch (this) {
             case WATER_BOLT -> ModContent.WATER_TOME.get();
             case WATER_SHIELD -> ModContent.WATER_SHIELD_TOME.get();
@@ -28,8 +28,10 @@ public enum SpellCatalog {
             case FIRE_BALL -> ModContent.FIRE_TOME.get();
             case MIRE -> ModContent.MIRE_TOME.get();
             case STONE_CANNON -> ModContent.STONE_CANNON_TOME.get();
+            case ICICLE_FIELD -> null;
         };
     }
+    public Item iconItem() { return tomeItem()==null ? net.minecraft.world.item.Items.BLUE_ICE : tomeItem(); }
     public boolean knows(LivingEntity entity) {
         return entity.hasData(ModAttachments.KNOWLEDGE) && entity.getData(ModAttachments.KNOWLEDGE).knows(id);
     }
@@ -46,6 +48,7 @@ public enum SpellCatalog {
             case FIRE_BALL -> MagicConfig.FIRE_BALL_CHANT_TICKS.getAsInt();
             case MIRE -> MagicConfig.MIRE_CHANT_TICKS.getAsInt();
             case STONE_CANNON -> MagicConfig.STONE_CANNON_CHANT_TICKS.getAsInt();
+            case ICICLE_FIELD -> MagicConfig.ICICLE_FIELD_CHANT_TICKS.getAsInt();
         };
         return SpellTraining.chantTicks(base, practiceCount(entity));
     }
@@ -60,6 +63,7 @@ public enum SpellCatalog {
             case FIRE_BALL -> MagicConfig.FIRE_BALL_COST.getAsInt();
             case MIRE -> MagicConfig.MIRE_COST.getAsInt();
             case STONE_CANNON -> MagicConfig.STONE_CANNON_COST.getAsInt();
+            case ICICLE_FIELD -> MagicConfig.ICICLE_FIELD_COST.getAsInt();
         };
     }
     public boolean cast(ServerPlayer player, float charge) {
@@ -78,6 +82,7 @@ public enum SpellCatalog {
             case FIRE_BALL -> FireMagic.cast(player, mode, formStage);
             case MIRE -> MireSpell.cast(player, mode);
             case STONE_CANNON -> StoneCannonSpell.cast(player, mode, formStage);
+            case ICICLE_FIELD -> IcicleSpell.cast(player, mode);
         };
     }
 

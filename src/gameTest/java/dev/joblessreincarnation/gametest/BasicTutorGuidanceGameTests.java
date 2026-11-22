@@ -59,6 +59,7 @@ public final class BasicTutorGuidanceGameTests {
         return new FakePlayer(helper.getLevel(), new GameProfile(UUID.randomUUID(), "BasicGuidance"));
     }
 
+    private static SpellCatalog[] bookSpells(){return java.util.Arrays.stream(SpellCatalog.values()).filter(v->v.tomeItem()!=null).toArray(SpellCatalog[]::new);}
     private static ItemStack tome(SpellCatalog spell) {
         return switch (spell) {
             case WATER_BOLT -> ModContent.WATER_TOME.get().getDefaultInstance();
@@ -69,6 +70,7 @@ public final class BasicTutorGuidanceGameTests {
             case WATER_SHIELD -> ModContent.WATER_SHIELD_TOME.get().getDefaultInstance();
             case MIRE -> ModContent.MIRE_TOME.get().getDefaultInstance();
             case STONE_CANNON -> ModContent.STONE_CANNON_TOME.get().getDefaultInstance();
+            case ICICLE_FIELD -> throw new IllegalArgumentException("Teacher-taught spell has no tome");
         };
     }
 
@@ -103,7 +105,7 @@ public final class BasicTutorGuidanceGameTests {
                 casting.select(selected.id());
                 player.setItemInHand(InteractionHand.MAIN_HAND, ModContent.TRAINING_STAFF.get().getDefaultInstance());
                 helper.assertValueEqual(TutorLessons.lesson(player), selected, "A valid raw wand selection opens its course even before learning");
-                for (SpellCatalog book : SpellCatalog.values()) {
+                for (SpellCatalog book : bookSpells()) {
                     player.setItemInHand(InteractionHand.MAIN_HAND, tome(book));
                     helper.assertValueEqual(TutorLessons.lesson(player), book, "Main-hand textbook takes precedence over a different selection");
                     helper.assertValueEqual(casting.selectedSpell(), selected.id(), "Consulting a textbook does not select its spell");
@@ -115,7 +117,7 @@ public final class BasicTutorGuidanceGameTests {
             player.setItemInHand(InteractionHand.MAIN_HAND, ModContent.TRAINING_STAFF.get().getDefaultInstance());
             helper.assertValueEqual(TutorLessons.lesson(player), SpellCatalog.WATER_BOLT, "Unknown raw selection safely uses the water course");
             helper.assertValueEqual(casting.selectedSpell(), unknown, "Fallback must not normalize the saved selection");
-            for (SpellCatalog offhand : SpellCatalog.values()) {
+            for (SpellCatalog offhand : bookSpells()) {
                 player.setItemInHand(InteractionHand.OFF_HAND, tome(offhand));
                 for (ItemStack other : List.of(ItemStack.EMPTY, Items.STICK.getDefaultInstance(), Items.APPLE.getDefaultInstance())) {
                     player.setItemInHand(InteractionHand.MAIN_HAND, other);
@@ -137,7 +139,7 @@ public final class BasicTutorGuidanceGameTests {
             trained.setData(ModAttachments.TRAINING, new TrainingProgress(3, true, true, 3));
             for (FakePlayer player : List.of(empty, known, trained)) {
                 for (int repeat = 0; repeat < 3; repeat++) {
-                    for (SpellCatalog spell : SpellCatalog.values()) {
+                    for (SpellCatalog spell : bookSpells()) {
                         player.setItemInHand(InteractionHand.MAIN_HAND, tome(spell));
                         helper.assertValueEqual(TutorLessons.lesson(player), spell, "Every book can request guidance before learning");
                         TutorLessons.message(player);

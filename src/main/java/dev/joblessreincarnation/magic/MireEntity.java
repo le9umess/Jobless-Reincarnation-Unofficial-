@@ -15,12 +15,13 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 /**
  * A passable, unsaved ground drawing. All slowing is resolved by MireFields once per server-level tick, including
- * fields whose own entity tick has stopped. Position and start time completely describe the fixed footprint.
+ * fields whose own entity tick has stopped. Both sides derive the surface from the same block footprint.
  */
 public final class MireEntity extends Entity {
     public static final double RADIUS = 2.5;
@@ -35,6 +36,8 @@ public final class MireEntity extends Entity {
     @Nullable private UUID ownerId;
     private boolean effectReported;
     private boolean ended;
+    @Nullable private MireGround.Surface surface;
+    private long surfaceTick = Long.MIN_VALUE;
 
     public MireEntity(EntityType<? extends MireEntity> type, Level level) {
         super(type, level);
@@ -71,10 +74,40 @@ public final class MireEntity extends Entity {
         return elapsed >= FORM_TICKS && elapsed < LIFETIME_TICKS - FADE_TICKS;
     }
 
+    /** Re-read immediately at admission and before each server contact sweep, including multiple sweeps in one tick. */
+    @Nullable
+    MireGround.Surface refreshSurface() {
+        surface = MireGround.sample(level(), position());
+        surfaceTick = level().getGameTime();
+        return surface;
+    }
+
+    @Nullable
+    public MireGround.Surface surface() {
+        if (surfaceTick != level().getGameTime()) refreshSurface();
+        return surface;
+    }
+
+    /** Absolute standing height in the current footprint; an absent cell has no contact surface. */
+    public double surfaceY(double x, double z) {
+        if (!Double.isFinite(x) || !Double.isFinite(z)
+                || x < getX() - HALF_EXTENT || x >= getX() + HALF_EXTENT
+                || z < getZ() - HALF_EXTENT || z >= getZ() + HALF_EXTENT) return Double.NaN;
+        int dx = Mth.floor(x) - getBlockX(), dz = Mth.floor(z) - getBlockZ();
+        if (dx * dx + dz * dz > RADIUS * RADIUS) return Double.NaN;
+        MireGround.Surface shape = surface();
+        return shape == null ? Double.NaN : getY() + shape.offsetAt(dx, dz);
+    }
+
     public List<BlockPos> surfaceCells() {
         BlockPos center = blockPosition();
-        return CELL_OFFSETS.stream().map(center::offset).toList();
+        MireGround.Surface shape = surface();
+        if (shape == null) return List.of();
+        return CELL_OFFSETS.stream().map(cell -> center.offset(cell.getX(), shape.offsetAt(cell.getX(), cell.getZ()), cell.getZ())).toList();
     }
+
+    /** The entity remains passable; ensure its raised or lowered patches can still enter the camera frustum. */
+    @Override public AABB getBoundingBoxForCulling() { return getBoundingBox().inflate(0.0, 1.0, 0.0); }
 
     /** One successful contact notification per paid field, irrespective of how many overlapping sources exist. */
     boolean reportFirstEffect() {

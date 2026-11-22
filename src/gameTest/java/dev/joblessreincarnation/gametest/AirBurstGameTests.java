@@ -13,14 +13,20 @@ import java.util.function.Consumer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.network.Connection;
+import net.minecraft.network.PacketSendListener;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.CommonListenerCookie;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.OwnableEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Husk;
-import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
@@ -35,16 +41,28 @@ import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 @PrefixGameTestTemplate(false)
 public final class AirBurstGameTests {
     private static final class Caster extends FakePlayer {
-        Caster(ServerLevel level) { super(level, new GameProfile(UUID.randomUUID(), "AirTest")); }
+        Caster(ServerLevel level) { super(level, new GameProfile(UUID.randomUUID(), "Air" + UUID.randomUUID().toString().substring(0, 8))); }
         void tickUse() { if (isUsingItem()) updateUsingItem(getUseItem()); }
-    }
-    private static final class OwnedZombie extends Zombie implements OwnableEntity {
-        private final UUID owner = UUID.randomUUID();
-        OwnedZombie(ServerLevel level) { super(EntityType.ZOMBIE, level); }
-        @Override public UUID getOwnerUUID() { return owner; }
     }
     private static Caster caster(GameTestHelper helper) {
         Caster player = new Caster(helper.getLevel());
+        equipCaster(helper, player);
+        return player;
+    }
+    private static ServerPlayer humanCaster(GameTestHelper helper) {
+        var level = helper.getLevel();
+        // FakePlayer.canHarmPlayer unconditionally denies PvP. Use vanilla's actual team and PvP checks.
+        var cookie = CommonListenerCookie.createInitial(new GameProfile(UUID.randomUUID(),
+                "AirPvp" + UUID.randomUUID().toString().substring(0, 8)), false);
+        var player = new ServerPlayer(level.getServer(), level, cookie.gameProfile(), cookie.clientInformation());
+        player.connection = new ServerGamePacketListenerImpl(level.getServer(), new Connection(PacketFlow.SERVERBOUND), player, cookie) {
+            @Override public void send(Packet<?> packet) {}
+            @Override public void send(Packet<?> packet, PacketSendListener listener) {}
+        };
+        equipCaster(helper, player);
+        return player;
+    }
+    private static void equipCaster(GameTestHelper helper, ServerPlayer player) {
         player.setPos(helper.absoluteVec(new Vec3(8, 2, 4)));
         player.setYRot(0); player.setXRot(0);
         player.getAbilities().instabuild = false;
@@ -52,7 +70,6 @@ public final class AirBurstGameTests {
         player.getData(ModAttachments.KNOWLEDGE).learn(AirBurstSpell.SPELL);
         player.getData(ModAttachments.CASTING).select(AirBurstSpell.SPELL);
         player.setData(ModAttachments.MANA, ManaData.full(100));
-        return player;
     }
     private static Husk husk(GameTestHelper helper, Caster player, double x, double y, double z) {
         Husk mob = EntityType.HUSK.create(helper.getLevel());
@@ -62,7 +79,7 @@ public final class AirBurstGameTests {
         helper.getLevel().addFreshEntity(mob);
         return mob;
     }
-    private static void reset(Caster player) {
+    private static void reset(ServerPlayer player) {
         player.stopUsingItem();
         player.setData(ModAttachments.MANA, ManaData.full(100));
         player.getCooldowns().removeCooldown(ModContent.TRAINING_STAFF.get());
@@ -154,7 +171,7 @@ public final class AirBurstGameTests {
         List<Husk> tied = new ArrayList<>();
         for (int index = 0; index < MagicConfig.AIR_BURST_MAX_TARGETS.getAsInt() + 2; index++) tied.add(husk(helper, player, 0, 0, 3));
         Husk nearer = husk(helper, player, 0, 0, 2);
-        List<Mob> selected = AirBurstSpell.targets(player);
+        List<LivingEntity> selected = AirBurstSpell.targets(player);
         helper.assertValueEqual(selected.size(), MagicConfig.AIR_BURST_MAX_TARGETS.getAsInt(), "Bounded work per pulse");
         helper.assertValueEqual(selected.getFirst(), nearer, "Distance precedes creation order");
         for (int index = 1; index < selected.size(); index++) helper.assertValueEqual(selected.get(index), tied.get(index - 1), "Equal distances use stable entity id order");
@@ -194,7 +211,129 @@ public final class AirBurstGameTests {
     }
 
     @GameTest(template = "empty")
-    public static void friendlyOwnedMountedInvulnerableAndBossTargetsAreExcluded(GameTestHelper helper) {
+    public static void airPushesCattleAndVillagersButSparesStoryResidentsAndOwnPets(GameTestHelper helper) {
+        var player = humanCaster(helper);
+        var level = helper.getLevel();
+        var cow = EntityType.COW.create(level);
+        var pet = EntityType.WOLF.create(level);
+        var villager = EntityType.VILLAGER.create(level);
+        List<Mob> protectedTargets = List.of(pet, ModContent.ROXY_TUTOR.get().create(level),
+                ModContent.SYLPHIETTE.get().create(level), ModContent.PAUL_GREYRAT.get().create(level),
+                ModContent.ZENITH_GREYRAT.get().create(level), ModContent.LILIA_GREYRAT.get().create(level));
+        pet.setTame(true, false);
+        pet.setOwnerUUID(player.getUUID());
+        List<Mob> targets = new ArrayList<>(protectedTargets);
+        targets.add(cow);
+        targets.add(villager);
+        for (Mob target : targets) {
+            target.moveTo(player.getX(), player.getY(), player.getZ() + 3, 0, 0);
+            helper.assertTrue(level.addFreshEntity(target) && AirBurstSpell.inPulse(player, target),
+                    "Each fixture is in range and in sight: " + target.getType());
+        }
+        boolean oldPvp = level.getServer().isPvpAllowed();
+        try {
+            level.getServer().setPvpAllowed(true);
+            level.addNewPlayer(player);
+            helper.assertTrue(AirBurstSpell.cast(player), "Release one pulse across all eight targets");
+            helper.assertTrue(cow.getDeltaMovement().z > 0 && villager.getDeltaMovement().z > 0,
+                    "Cattle and ordinary villagers are pushed");
+            for (Mob target : protectedTargets)
+                stationary(helper, target, "Story residents and the caster's own pet stay put: " + target.getType());
+        } finally {
+            player.discard();
+            level.getServer().setPvpAllowed(oldPvp);
+        }
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty")
+    public static void playerImpulseRespectsPvpFriendlyFireAndInvulnerability(GameTestHelper helper) {
+        var level = helper.getLevel();
+        var player = humanCaster(helper);
+        var other = humanCaster(helper);
+        other.setPos(player.position().add(0, 0, 3));
+        var wolf = EntityType.WOLF.create(level);
+        wolf.setTame(true, false);
+        wolf.setOwnerUUID(other.getUUID());
+        wolf.moveTo(player.getX() + .4, player.getY(), player.getZ() + 3, 0, 0);
+        var scoreboard = level.getScoreboard();
+        var team = scoreboard.addPlayerTeam("air" + UUID.randomUUID().toString().substring(0, 8));
+        boolean oldPvp = level.getServer().isPvpAllowed();
+        try {
+            level.addNewPlayer(other);
+            helper.assertTrue(level.addFreshEntity(wolf) && wolf.getOwner() == other && AirBurstSpell.inPulse(player, wolf),
+                    "A nearby pet belongs to the second player in this level");
+            level.getServer().setPvpAllowed(false);
+            helper.assertFalse(AirBurstSpell.eligible(player, other), "PvP-disabled server protects players");
+            helper.assertTrue(AirBurstSpell.cast(player), "PvP-disabled cast still settles");
+            stationary(helper, wolf, "PvP-disabled server protects another player's pet");
+            reset(player);
+            level.getServer().setPvpAllowed(true);
+            scoreboard.addPlayerToTeam(player.getScoreboardName(), team);
+            scoreboard.addPlayerToTeam(other.getScoreboardName(), team);
+            team.setAllowFriendlyFire(false);
+            helper.assertFalse(AirBurstSpell.eligible(player, other), "Friendly fire setting protects teammates");
+            helper.assertTrue(AirBurstSpell.cast(player), "Same-team pulse releases");
+            stationary(helper, wolf, "Pet of a teammate with friendly fire disabled is protected");
+            reset(player);
+            team.setAllowFriendlyFire(true);
+            other.getAbilities().invulnerable = true;
+            helper.assertFalse(AirBurstSpell.eligible(player, other), "Creative invulnerability is respected");
+            other.getAbilities().invulnerable = false;
+            other.hurtMarked = false;
+            float health = other.getHealth();
+            helper.assertTrue(AirBurstSpell.cast(player), "Allowed player receives the real cast");
+            helper.assertTrue(other.getDeltaMovement().z > 0 && other.hurtMarked,
+                    "Player impulse points away and is marked for the controlling client");
+            helper.assertTrue(wolf.getDeltaMovement().z > 0, "Friendly fire enabled lets the caster push the other player's pet");
+            helper.assertValueEqual(other.getHealth(), health, "Knockback deals no damage");
+        } finally {
+            wolf.discard();
+            other.discard();
+            scoreboard.removePlayerTeam(team);
+            level.getServer().setPvpAllowed(oldPvp);
+        }
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty")
+    public static void petWithOfflineOwnerUsesPvpAndStoredTeamMembership(GameTestHelper helper) {
+        var level = helper.getLevel();
+        var server = level.getServer();
+        var caster = humanCaster(helper);
+        var owner = new GameProfile(UUID.randomUUID(), "AirPet" + UUID.randomUUID().toString().substring(0, 8));
+        var wolf = EntityType.WOLF.create(level);
+        wolf.setTame(true, false);
+        wolf.setOwnerUUID(owner.getId());
+        var board = level.getScoreboard();
+        var team = board.addPlayerTeam("air" + UUID.randomUUID().toString().substring(0, 8));
+        boolean oldPvp = server.isPvpAllowed();
+        try {
+            server.setPvpAllowed(false);
+            helper.assertFalse(AirBurstSpell.eligible(caster, wolf), "PvP off protects an absent owner's wolf");
+            server.setPvpAllowed(true);
+            helper.assertTrue(AirBurstSpell.eligible(caster, wolf), "An unteamed caster may affect another owner's wolf with PvP on");
+            board.addPlayerToTeam(caster.getScoreboardName(), team);
+            team.setAllowFriendlyFire(false);
+            helper.assertFalse(AirBurstSpell.eligible(caster, wolf), "Unknown offline owner is protected when friendly fire matters");
+            // A GameTest server can be started without a profile cache. That is the unknown-owner case above.
+            var cache = server.getProfileCache();
+            if (cache != null) {
+                cache.add(owner);
+                board.addPlayerToTeam(owner.getName(), team);
+                helper.assertFalse(AirBurstSpell.eligible(caster, wolf), "An offline teammate's pet remains protected");
+                board.removePlayerFromTeam(owner.getName(), team);
+                helper.assertTrue(AirBurstSpell.eligible(caster, wolf), "A known offline owner outside the caster's team is eligible");
+            }
+        } finally {
+            board.removePlayerTeam(team);
+            server.setPvpAllowed(oldPvp);
+        }
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty")
+    public static void pulseHonoursTeamSettingAndPushesMountWithoutDismountingPassenger(GameTestHelper helper) {
         Caster player = caster(helper);
         Husk allied = husk(helper, player, 0, 0, 3);
         var scoreboard = helper.getLevel().getScoreboard();
@@ -202,29 +341,26 @@ public final class AirBurstGameTests {
         try {
             scoreboard.addPlayerToTeam(player.getScoreboardName(), team);
             scoreboard.addPlayerToTeam(allied.getScoreboardName(), team);
-            helper.assertFalse(AirBurstSpell.eligible(player, allied), "Allied enemy is protected");
-            helper.assertTrue(AirBurstSpell.cast(player), "All-allied pulse remains a release");
-            stationary(helper, allied, "Allied target did not move");
+            team.setAllowFriendlyFire(false);
+            helper.assertFalse(AirBurstSpell.eligible(player, allied), "No-friendly-fire protects allied mob");
+            team.setAllowFriendlyFire(true);
+            helper.assertTrue(AirBurstSpell.eligible(player, allied), "Friendly fire enabled allows allied mob");
         } finally { scoreboard.removePlayerTeam(team); }
-        Husk immune = husk(helper, player, 0, 0, 3);
-        immune.setInvulnerable(true);
-        helper.assertFalse(AirBurstSpell.eligible(player, immune), "Invulnerable enemy protected");
-        helper.assertFalse(AirBurstSpell.eligible(player, new OwnedZombie(helper.getLevel())), "Owned Enemy mob protected even with owner offline");
-        helper.assertFalse(AirBurstSpell.eligible(player, caster(helper)), "Other players never affected");
-        helper.assertFalse(AirBurstSpell.eligible(player, EntityType.COW.create(helper.getLevel())), "Animals never affected");
-        helper.assertFalse(AirBurstSpell.eligible(player, EntityType.VILLAGER.create(helper.getLevel())), "Villagers never affected");
-        helper.assertFalse(AirBurstSpell.eligible(player, EntityType.WITHER.create(helper.getLevel())), "Default boss immunity tag applies");
-        helper.assertTrue(EntityType.ENDER_DRAGON.is(AirBurstSpell.IMMUNE), "Default dragon immunity tag is loaded");
+        helper.assertFalse(AirBurstSpell.eligible(player, player), "The caster does not push themselves");
+        helper.assertFalse(AirBurstSpell.eligible(player, EntityType.ARMOR_STAND.create(helper.getLevel())), "Decorative stands are excluded");
+        helper.assertTrue(AirBurstSpell.eligible(player, EntityType.WITHER.create(helper.getLevel())), "Bosses use vanilla knockback resistance");
         var slime = EntityType.SLIME.create(helper.getLevel());
         helper.assertTrue(AirBurstSpell.eligible(player, slime), "Enemy classification includes Slime despite not extending Monster");
-        Husk mounted = husk(helper, player, 0, 0, 3);
-        var carrier = EntityType.COW.create(helper.getLevel());
-        helper.assertTrue(mounted.startRiding(carrier, true), "Mounted fixture succeeds");
-        helper.assertFalse(AirBurstSpell.eligible(player, mounted), "Passengers excluded");
-        mounted.stopRiding();
-        var rider = EntityType.COW.create(helper.getLevel());
-        helper.assertTrue(rider.startRiding(mounted, true), "Carrier fixture succeeds");
-        helper.assertFalse(AirBurstSpell.eligible(player, mounted), "Carriers excluded");
+        var horse = EntityType.HORSE.create(helper.getLevel());
+        horse.moveTo(player.getX(), player.getY(), player.getZ() + 3, 0, 0);
+        helper.getLevel().addFreshEntity(horse);
+        Husk rider = husk(helper, player, 0, 0, 3);
+        helper.assertTrue(rider.startRiding(horse, true), "Rider mounts the real in-world horse");
+        helper.assertFalse(AirBurstSpell.eligible(player, rider), "Passengers do not receive an independent impulse");
+        helper.assertTrue(AirBurstSpell.targets(player).contains(horse), "Mounted horse is selected by the real cone query");
+        helper.assertTrue(AirBurstSpell.cast(player), "Pulse reaches a mount carrying its rider");
+        helper.assertTrue(horse.getDeltaMovement().z > 0 && rider.getVehicle() == horse,
+                "The mount is pushed without dismounting its passenger");
         rider.stopRiding();
         helper.succeed();
     }

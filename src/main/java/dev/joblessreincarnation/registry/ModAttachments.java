@@ -110,5 +110,7 @@ public final class ModAttachments {
     public static final Supplier<AttachmentType<net.minecraft.nbt.CompoundTag>> BUENA_CHUNK = TYPES.register("buena_generation", () ->
             AttachmentType.builder(() -> new net.minecraft.nbt.CompoundTag()).serialize(net.minecraft.nbt.CompoundTag.CODEC).build());
 
+    public static final Supplier<AttachmentType<dev.joblessreincarnation.magic.IcicleWet>> ICICLE_WET = TYPES.register("icicle_wet", () -> AttachmentType.builder(() -> dev.joblessreincarnation.magic.IcicleWet.DRY).build());
+    public static final Supplier<AttachmentType<dev.joblessreincarnation.npc.IcicleCourse>> ICICLE_COURSE = TYPES.register("icicle_course", () -> AttachmentType.builder(() -> dev.joblessreincarnation.npc.IcicleCourse.NEW).serialize(dev.joblessreincarnation.npc.IcicleCourse.CODEC).copyOnDeath().build());
     private ModAttachments() {}
 }

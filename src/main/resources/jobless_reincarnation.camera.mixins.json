@@ -1,0 +1,21 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "dev.joblessreincarnation.mixin.camera",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "ServerPacketTraceMixin"
+  ],
+  "client": [
+    "CameraValuesMixin",
+    "TpsActivationMixin",
+    "AutoPerspectiveMixin",
+    "PickLimitMinecraftMixin",
+    "PickLimitGameRendererMixin",
+    "HeldReleaseMixin",
+    "MovePacketSentMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

@@ -59,6 +59,7 @@ public final class ManaHud {
             case HEALING -> 0xFFCCE9A0;
             case MIRE -> 0xFFBBA078;
             case STONE_CANNON -> 0xFFB5B3A9;
+            case ICICLE_FIELD -> 0xFFA8EAF2;
         };
         int detailColor = BODY;
         int pendingCost = 0;
@@ -80,6 +81,7 @@ public final class ManaHud {
                         : spell == SpellCatalog.AIR_BURST ? "hud.jobless_reincarnation.air_ready"
                         : spell == SpellCatalog.FIRE_BALL ? "hud.jobless_reincarnation.fire_ready"
                         : spell == SpellCatalog.STONE_CANNON ? "hud.jobless_reincarnation.stone_cannon_ready"
+                        : spell == SpellCatalog.ICICLE_FIELD ? "hud.jobless_reincarnation.icicle_field_ready"
                         : spell == SpellCatalog.MIRE ? "hud.jobless_reincarnation.mire_ready"
                         : charge >= 1 ? "hud.jobless_reincarnation.fully_shaped_named" : "hud.jobless_reincarnation.shaping_named",
                         spell.title(), (int)(charge * 100));
@@ -87,7 +89,8 @@ public final class ManaHud {
                         ? "hud.jobless_reincarnation.wall_release" : spell == SpellCatalog.AIR_BURST
                         ? "hud.jobless_reincarnation.air_release" : spell == SpellCatalog.HEALING
                         ? "hud.jobless_reincarnation.healing_release" : spell == SpellCatalog.FIRE_BALL
-                        ? "hud.jobless_reincarnation.fire_release" : spell == SpellCatalog.MIRE
+                        ? "hud.jobless_reincarnation.fire_release" : spell == SpellCatalog.ICICLE_FIELD
+                        ? "hud.jobless_reincarnation.icicle_field_release" : spell == SpellCatalog.MIRE
                         ? "hud.jobless_reincarnation.mire_release" : spell == SpellCatalog.STONE_CANNON
                         ? "hud.jobless_reincarnation.stone_cannon_release" : "hud.jobless_reincarnation.release_cost")
                         : "hud.jobless_reincarnation.chant_cost_named", pendingCost);
@@ -217,7 +220,8 @@ public final class ManaHud {
     }
     /** Small original pixel glyphs: a water drop, a small shield, six-cell wall, three wind lines, and a four-point healing light. */
     static void spellIcon(GuiGraphics graphics,SpellCatalog spell,int x,int y) {
-        if(spell==SpellCatalog.WATER_SHIELD) {
+        if(SpellIcons.has(spell)) SpellIcons.drawSmall(graphics,spell,x,y);
+        else if(spell==SpellCatalog.WATER_SHIELD) {
             graphics.fill(x+2,y,x+10,y+1,0xFF41C9EA);
             graphics.fill(x+1,y+1,x+11,y+5,0xFF41C9EA);
             graphics.fill(x+2,y+5,x+10,y+7,0xFF41C9EA);

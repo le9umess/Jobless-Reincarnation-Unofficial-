@@ -30,16 +30,23 @@ public final class StaffInput {
             DismissInputState.beforeTick(false); return;
         }
         if (!minecraft.options.keyUse.isDown()) awaitUseRelease = false;
+        // Combat view: the player's look follows the crosshair before anything this tick reads it.
+        dev.joblessreincarnation.client.combat.StaffAim.beforeTick(minecraft, player);
         boolean eligible = eligible(minecraft, player);
         DismissInputState.beforeTick(SpellRecall.beforeTick(minecraft, player, eligible));
-        if (!eligible || minecraft.options.keyUse.isDown() || !player.isUsingItem()
-                || player.getUsedItemHand() != InteractionHand.MAIN_HAND
-                || !player.getUseItem().is(ModContent.TRAINING_STAFF.get())) return;
+        boolean usingStaff = player.isUsingItem() && player.getUsedItemHand() == InteractionHand.MAIN_HAND
+                && player.getUseItem().is(ModContent.TRAINING_STAFF.get());
         boolean crouchingNow = minecraft.options.keyShift.isDown();
-        if (crouchingNow == player.isShiftKeyDown()) return;
-        var action = crouchingNow ? ServerboundPlayerCommandPacket.Action.PRESS_SHIFT_KEY
-                : ServerboundPlayerCommandPacket.Action.RELEASE_SHIFT_KEY;
-        player.connection.send(new ServerboundPlayerCommandPacket(player, action));
+        // Vanilla releases later in this tick: crouch first, then the whole look, then vanilla's own release. In the combat
+        // view the look travels in this tick's movement packet and vanilla's release is held until right after it.
+        for (var step : dev.joblessreincarnation.combat.ReleaseSync.plan(eligible, minecraft.options.keyUse.isDown(), usingStaff, crouchingNow,
+                player.isShiftKeyDown(), dev.joblessreincarnation.client.combat.StaffAim.canSync(minecraft, player))) {
+            switch (step) {
+                case SNEAK -> player.connection.send(new ServerboundPlayerCommandPacket(player, crouchingNow
+                        ? ServerboundPlayerCommandPacket.Action.PRESS_SHIFT_KEY : ServerboundPlayerCommandPacket.Action.RELEASE_SHIFT_KEY));
+                case ROTATION -> dev.joblessreincarnation.client.combat.StaffAim.prepareRelease(minecraft, player);
+            }
+        }
     }
     /** With the staff in hand, in the game itself, with nothing in the way: the spell key and its hotbar keys are ours. */
     static boolean eligible(Minecraft minecraft, LocalPlayer player) {
@@ -67,6 +74,9 @@ public final class StaffInput {
                 && SpellRecall.holdsBackUse(minecraft.player)) {
             event.setCanceled(true);
             event.setSwingHand(false);
+        } else if (event.isUseItem() && event.getHand() == InteractionHand.MAIN_HAND && minecraft.player != null) {
+            // Combat view: face the crosshair before vanilla builds the use packet, which carries the look itself.
+            dev.joblessreincarnation.client.combat.StaffAim.beforeUse(minecraft, minecraft.player);
         }
     }
     private StaffInput() {}

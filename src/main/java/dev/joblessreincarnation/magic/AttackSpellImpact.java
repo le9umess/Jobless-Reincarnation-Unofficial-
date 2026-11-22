@@ -58,7 +58,7 @@ public final class AttackSpellImpact {
         boolean accepted = hit.hurt(damageSource(source, caster, spell), amount);
         boolean loss = target.getHealth() < health || target.getAbsorptionAmount() < absorption
                 || practiceScore >= 0 && dev.joblessreincarnation.encounter.PaulDuel.score(target) < practiceScore;
-        if (accepted && loss) applyDebuff(caster, target, spell, stage);
+        if (accepted && loss) { if(spell==SpellCatalog.WATER_BOLT) IcicleWet.splash(target,caster); applyDebuff(caster, target, spell, stage); }
         return accepted && loss;
     }
 

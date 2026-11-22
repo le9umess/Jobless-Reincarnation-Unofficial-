@@ -37,6 +37,7 @@ import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 public final class TomeFeedbackGameTests {
     private record Notice(String key, boolean overlay) {}
 
+    private static SpellCatalog[] bookSpells() {return java.util.Arrays.stream(SpellCatalog.values()).filter(s->s.tomeItem()!=null).toArray(SpellCatalog[]::new);}
     private static final class Reader extends FakePlayer {
         final List<Notice> notices = new ArrayList<>();
         boolean spectator;
@@ -60,6 +61,7 @@ public final class TomeFeedbackGameTests {
             case WATER_SHIELD -> ModContent.WATER_SHIELD_TOME.get();
             case MIRE -> ModContent.MIRE_TOME.get();
             case STONE_CANNON -> ModContent.STONE_CANNON_TOME.get();
+            case ICICLE_FIELD -> throw new IllegalArgumentException("Teacher-taught spell has no tome");
         };
     }
 
@@ -73,6 +75,7 @@ public final class TomeFeedbackGameTests {
             case WATER_SHIELD -> "water_shield.already_learned";
             case MIRE -> "mire.already_learned";
             case STONE_CANNON -> "stone_cannon.already_learned";
+            case ICICLE_FIELD -> throw new IllegalArgumentException("Teacher-taught spell has no tome");
         };
     }
 
@@ -132,7 +135,7 @@ public final class TomeFeedbackGameTests {
     public static void fiveTomesAllowFirstReminderAndExactlyFortyTickRenewal(GameTestHelper helper) {
         List<Reader> readers = new ArrayList<>();
         long start = helper.getLevel().getServer().overworld().getGameTime();
-        for (SpellCatalog spell : SpellCatalog.values()) {
+        for (SpellCatalog spell : bookSpells()) {
             Reader reader = reader(helper, spell, true);
             readers.add(reader);
             consumed(helper, reader);
@@ -146,7 +149,7 @@ public final class TomeFeedbackGameTests {
             for (int index = 0; index < readers.size(); index++) {
                 Reader reader = readers.get(index);
                 consumed(helper, reader);
-                notice(helper, reader, 1, alreadyKey(SpellCatalog.values()[index]));
+                notice(helper, reader, 1, alreadyKey(bookSpells()[index]));
             }
         });
         helper.runAfterDelay(40, () -> {
@@ -155,9 +158,9 @@ public final class TomeFeedbackGameTests {
             for (int index = 0; index < readers.size(); index++) {
                 Reader reader = readers.get(index);
                 consumed(helper, reader);
-                notice(helper, reader, 2, alreadyKey(SpellCatalog.values()[index]));
+                notice(helper, reader, 2, alreadyKey(bookSpells()[index]));
                 consumed(helper, reader);
-                notice(helper, reader, 2, alreadyKey(SpellCatalog.values()[index]));
+                notice(helper, reader, 2, alreadyKey(bookSpells()[index]));
             }
             helper.succeed();
         });
@@ -166,12 +169,12 @@ public final class TomeFeedbackGameTests {
     @GameTest(template = "empty")
     public static void remindersBelongToEachPlayerAndSpellNotEachBookStack(GameTestHelper helper) {
         Reader first = new Reader(helper.getLevel()), second = new Reader(helper.getLevel());
-        for (SpellCatalog spell : SpellCatalog.values()) {
+        for (SpellCatalog spell : bookSpells()) {
             first.getData(ModAttachments.KNOWLEDGE).learn(spell.id());
             second.getData(ModAttachments.KNOWLEDGE).learn(spell.id());
         }
         int count = 0;
-        for (SpellCatalog spell : SpellCatalog.values()) {
+        for (SpellCatalog spell : bookSpells()) {
             first.setItemInHand(InteractionHand.MAIN_HAND, tome(spell).getDefaultInstance());
             second.setItemInHand(InteractionHand.MAIN_HAND, tome(spell).getDefaultInstance());
             consumed(helper, first);
@@ -213,7 +216,7 @@ public final class TomeFeedbackGameTests {
 
     @GameTest(template = "empty")
     public static void offhandDeadAndSpectatorRequestsNeverSpendReminderBudget(GameTestHelper helper) {
-        for (SpellCatalog spell : SpellCatalog.values()) for (int context = 0; context < 3; context++) {
+        for (SpellCatalog spell : bookSpells()) for (int context = 0; context < 3; context++) {
             Reader reader = reader(helper, spell, true);
             InteractionHand hand = InteractionHand.MAIN_HAND;
             switch (context) {
@@ -243,7 +246,7 @@ public final class TomeFeedbackGameTests {
     public static void learningSuccessIsProtectedWhileAnotherUnknownTomeCanStillBeStudied(GameTestHelper helper) {
         List<Reader> readers = new ArrayList<>();
         long start = helper.getLevel().getServer().overworld().getGameTime();
-        for (SpellCatalog spell : SpellCatalog.values()) {
+        for (SpellCatalog spell : bookSpells()) {
             Reader reader = reader(helper, spell, false);
             readers.add(reader);
             finishStudy(helper, reader, spell);
@@ -253,7 +256,7 @@ public final class TomeFeedbackGameTests {
             SpellCatalog selectedAfterFirst = SpellCatalog.selected(reader);
             helper.assertValueEqual(selectedAfterFirst, spell == SpellCatalog.MIRE ? SpellCatalog.WATER_BOLT : spell == SpellCatalog.STONE_CANNON ? SpellCatalog.EARTH_WALL : spell,
                     "First study preserves existing prerequisite selection, or selects the first learned spell");
-            SpellCatalog other = java.util.Arrays.stream(SpellCatalog.values())
+            SpellCatalog other = java.util.Arrays.stream(bookSpells())
                     .filter(candidate -> candidate != SpellCatalog.MIRE && candidate != SpellCatalog.STONE_CANNON && !candidate.knows(reader))
                     .findFirst().orElseThrow();
             helper.assertFalse(other.knows(reader), "The second book is genuinely unknown, not a prerequisite already seeded");
@@ -281,7 +284,7 @@ public final class TomeFeedbackGameTests {
             for (int index = 0; index < readers.size(); index++) {
                 Reader reader = readers.get(index);
                 consumed(helper, reader);
-                notice(helper, reader, 3, alreadyKey(SpellCatalog.values()[index]));
+                notice(helper, reader, 3, alreadyKey(bookSpells()[index]));
             }
             helper.succeed();
         });
@@ -290,7 +293,7 @@ public final class TomeFeedbackGameTests {
     @GameTest(template = "empty")
     public static void repeatedKnownBooksPreserveGameplayInventoryAndCooldowns(GameTestHelper helper) {
         Reader reader = new Reader(helper.getLevel());
-        for (SpellCatalog spell : SpellCatalog.values()) {
+        for (SpellCatalog spell : bookSpells()) {
             reader.getData(ModAttachments.KNOWLEDGE).learn(spell.id());
             for (int cast = 0; cast <= spell.ordinal(); cast++) reader.getData(ModAttachments.KNOWLEDGE).practice(spell.id());
             reader.getInventory().setItem(spell.ordinal(), tome(spell).getDefaultInstance());
@@ -301,7 +304,7 @@ public final class TomeFeedbackGameTests {
         reader.setData(ModAttachments.TRAINING, new TrainingProgress(2, true, true, 2));
         reader.getData(ModAttachments.CASTING).select(SpellCatalog.HEALING.id());
         reader.getCooldowns().addCooldown(ModContent.TRAINING_STAFF.get(), 35);
-        for (SpellCatalog spell : SpellCatalog.values()) reader.getCooldowns().addCooldown(tome(spell), 11);
+        for (SpellCatalog spell : bookSpells()) reader.getCooldowns().addCooldown(tome(spell), 11);
         for (int tick = 0; tick < 3; tick++) reader.getCooldowns().tick();
         float staffCooldown = reader.getCooldowns().getCooldownPercent(ModContent.TRAINING_STAFF.get(), 0);
         float bookCooldown = reader.getCooldowns().getCooldownPercent(tome(SpellCatalog.WATER_BOLT), 0);
@@ -311,11 +314,11 @@ public final class TomeFeedbackGameTests {
         List<ItemStack> inventory = new ArrayList<>();
         for (int slot = 0; slot < reader.getInventory().getContainerSize(); slot++)
             inventory.add(reader.getInventory().getItem(slot).copy());
-        for (SpellCatalog spell : SpellCatalog.values()) {
+        for (SpellCatalog spell : bookSpells()) {
             reader.getInventory().selected = spell.ordinal();
             for (int repeat = 0; repeat < 10; repeat++) consumed(helper, reader);
         }
-        helper.assertValueEqual(reader.notices.size(), SpellCatalog.values().length, "Only one reminder per spell despite repeated requests");
+        helper.assertValueEqual(reader.notices.size(), bookSpells().length, "Only one reminder per spell despite repeated requests");
         helper.assertValueEqual(reader.getData(ModAttachments.KNOWLEDGE).snapshot(), knowledge, "Knowledge and practice remain exact");
         helper.assertValueEqual(SpellCatalog.selected(reader), SpellCatalog.HEALING, "Reminders never choose a spell");
         helper.assertTrue(SpellCatalog.active(reader) == null, "Reminders do not acquire a casting lock");
@@ -331,7 +334,7 @@ public final class TomeFeedbackGameTests {
         helper.assertTrue(reader.getCooldowns().isOnCooldown(ModContent.TRAINING_STAFF.get()), "Staff cooldown is retained");
         helper.assertValueEqual(reader.getCooldowns().getCooldownPercent(ModContent.TRAINING_STAFF.get(), 0), staffCooldown,
                 "Staff cooldown has not advanced or restarted");
-        for (SpellCatalog spell : SpellCatalog.values()) {
+        for (SpellCatalog spell : bookSpells()) {
             helper.assertTrue(reader.getCooldowns().isOnCooldown(tome(spell)), "Existing book cooldown retained");
             helper.assertValueEqual(reader.getCooldowns().getCooldownPercent(tome(spell), 0), bookCooldown,
                     "Feedback introduces no change to existing item cooldowns");

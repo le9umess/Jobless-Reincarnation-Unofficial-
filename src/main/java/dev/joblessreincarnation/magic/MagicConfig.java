@@ -4,6 +4,7 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 
 /** Server-owned balance values with optional per-world overrides, synced by NeoForge. */
 public final class MagicConfig {
+    public static final ModConfigSpec.IntValue ICICLE_FIELD_CHANT_TICKS, ICICLE_FIELD_COST, ICICLE_FIELD_COOLDOWN;
     public static final ModConfigSpec SPEC;
     public static final ModConfigSpec.IntValue MAX_MANA;
     public static final ModConfigSpec.DoubleValue AURA_HARDNESS, AURA_MAX_REDUCTION_RATIO;
@@ -193,6 +194,10 @@ public final class MagicConfig {
         builder.pop().push("swordSchool");
         SCHOOL_PREPARATION_TICKS = builder.comment("Ticks between changes made with a training notebook. The Epic Fight skill editor retains the server's own replacement rule.")
                 .defineInRange("prepareCooldownTicks", 20, 0, 72000);
+        builder.pop().push("icicle_field");
+        ICICLE_FIELD_CHANT_TICKS = builder.defineInRange("chantTicks", 40, 1, 200);
+        ICICLE_FIELD_COST = builder.defineInRange("manaCost", 30, 1, 1000);
+        ICICLE_FIELD_COOLDOWN = builder.defineInRange("cooldownTicks", 20, 1, 200);
         builder.pop().push("naming");
         NAMING_CUSTOM = builder.comment("Whether players may give a name of their own for the NPCs to call them by; otherwise only \"Rudy\" or their game name.")
                 .define("allowCustomNames", true);

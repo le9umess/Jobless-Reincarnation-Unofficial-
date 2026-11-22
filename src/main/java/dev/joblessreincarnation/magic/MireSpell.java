@@ -80,7 +80,7 @@ public final class MireSpell {
                     || player.getMainHandItem() != wand || !wand.is(ModContent.TRAINING_STAFF.get())
                     || !mire.isAlive() || mire.isRemoved() || mire.level() != level
                     || level.getEntity(mire.getUUID()) != mire || !mire.position().equals(base)
-                    || !MireGround.isValid(level, base)
+                    || mire.refreshSurface() == null
                     || !isLearned(player) || player.getAbilities().instabuild != creative
                     || player.getCooldowns().isOnCooldown(ModContent.TRAINING_STAFF.get())
                     || (payment = mana.trySpendWithReceipt(MagicConfig.MIRE_COST.getAsInt(), MagicConfig.RECOVERY_DELAY_TICKS.getAsInt(), cooldown, creative, mode)) == null) {

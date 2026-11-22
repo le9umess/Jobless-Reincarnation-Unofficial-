@@ -8,7 +8,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.FluidTags;
-import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.HitResult;
@@ -41,7 +40,8 @@ public final class FireFocusEffects {
         if (!(caster.level() instanceof ServerLevel level) || !caster.isAlive() || caster.isSpectator())
             return Optional.empty();
         double yaw = Math.toRadians(caster.getYRot());
-        double side = caster.getMainArm() == HumanoidArm.RIGHT ? 1 : -1;
+        // The side the staff is drawn on: Epic Fight's own model (its combat mode) always draws it in the right hand.
+        double side = StaffSide.of(caster);
         Vec3 eye = caster.getEyePosition();
         Vec3 focus = eye.add(caster.getLookAngle().scale(1.05))
                 .add(-Math.cos(yaw) * 0.19 * side, -0.15, -Math.sin(yaw) * 0.19 * side);

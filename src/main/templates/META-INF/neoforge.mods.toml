@@ -16,6 +16,12 @@ learning magic from Roxy and the sword from Paul, and meeting Sylphiette. Made b
 [[mixins]]
 config="jobless_reincarnation.sword.mixins.json"
 
+[[mixins]]
+config="jobless_reincarnation.hud.mixins.json"
+
+[[mixins]]
+config="jobless_reincarnation.camera.mixins.json"
+
 [[dependencies.${mod_id}]]
 modId="neoforge"
 type="required"

@@ -37,6 +37,7 @@ public final class TutorLessons {
     public static Component message(Player player) {
         SpellCatalog lesson = lesson(player);
         return switch (lesson) {
+            case ICICLE_FIELD -> Component.translatable("message.jobless_reincarnation.icicle.lesson.start_hint");
             case WATER_BOLT -> TutorGuidance.message(TutorGuidance.snapshot(player));
             case FIRE_BALL -> FireTutorGuidance.message(FireTutorGuidance.snapshot(player));
             case WATER_SHIELD -> BasicTutorGuidance.message(BasicTutorGuidance.snapshot(player, lesson));

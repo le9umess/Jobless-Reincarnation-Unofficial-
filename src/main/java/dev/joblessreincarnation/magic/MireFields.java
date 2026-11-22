@@ -14,7 +14,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -26,7 +25,7 @@ import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 
 /**
- * Server-owned area and contact accounting. Each mob gets one transient modifier, regardless of how many eligible
+ * Server-owned area and contact accounting. Each target gets one transient modifier, regardless of how many eligible
  * sources cover it. No effect or modifier is persisted, and removal touches only this mod's private modifier ID.
  */
 public final class MireFields {
@@ -92,11 +91,8 @@ public final class MireFields {
         for (MireEntity field : new ArrayList<>(state.fields)) {
             ServerPlayer owner = field.owner();
             if (owner == null || !field.activeAt(now)) continue;
-            AABB search = new AABB(field.getX() - MireEntity.HALF_EXTENT,
-                    field.getY() - MireTargets.FOOT_TOLERANCE, field.getZ() - MireEntity.HALF_EXTENT,
-                    field.getX() + MireEntity.HALF_EXTENT, field.getY() + MireTargets.FOOT_TOLERANCE,
-                    field.getZ() + MireEntity.HALF_EXTENT);
-            for (Mob target : level.getEntitiesOfClass(Mob.class, search,
+            AABB search = field.getBoundingBox().inflate(0.0, 1.0 + MireTargets.FOOT_TOLERANCE, 0.0);
+            for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, search,
                     target -> MireTargets.eligible(owner, target) && MireTargets.touches(field, target))) {
                 sources.computeIfAbsent(target, ignored -> identitySet()).add(field);
             }
@@ -148,7 +144,7 @@ public final class MireFields {
                 && owner != null && owner.isAlive() && !owner.isRemoved() && !owner.isSpectator()
                 && owner.serverLevel() == level && owner.getUUID().equals(field.ownerId())
                 && now >= field.startGameTime() && now - field.startGameTime() < MireEntity.LIFETIME_TICKS
-                && MireGround.isValid(level, field.position());
+                && field.refreshSurface() != null;
     }
 
     private static boolean applySlow(LivingEntity target) {

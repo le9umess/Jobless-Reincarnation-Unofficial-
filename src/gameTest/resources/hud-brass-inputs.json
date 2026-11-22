@@ -1,0 +1,416 @@
+[
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/air.png",
+    "sha256": "3bfd0a716f0687ca0520727d6eba3c4cb49be2fada4ee553850b2444f60ee306",
+    "width": 9,
+    "height": 9
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/air_bursting.png",
+    "sha256": "522cd442c5b7a615f60690126015936ec2f185918fda27cb6d888be967148ed1",
+    "width": 9,
+    "height": 9
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/armor_empty.png",
+    "sha256": "3b7e28581f221fdfea77c2bffd2088826f4ccc79885466feb38ce351d49bcacb",
+    "width": 9,
+    "height": 9
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/armor_full.png",
+    "sha256": "4397c567c211517e1e7befdef7696f32e31d713bd4227396628d146c5f64f3aa",
+    "width": 9,
+    "height": 9
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/armor_half.png",
+    "sha256": "a0ba9886b2bb835ee82fbf4e26873d61583f3b563f343fc7a54855d2c1a5f643",
+    "width": 9,
+    "height": 9
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/experience_bar_background.png",
+    "sha256": "0fb4660a83fc687584a0fe331beaa28b6e2ff1f99c4c37d2f2c9a9d96fce5902",
+    "width": 182,
+    "height": 5
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/experience_bar_progress.png",
+    "sha256": "140c2ff1e0c218955d9241586964a7ac79667815e35f1f8e733623aae62011d3",
+    "width": 182,
+    "height": 5
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/food_empty.png",
+    "sha256": "4ea60e44944c6765a0c1a8d8d51dce8bef303fcd42db77fba2941d49662f7dbc",
+    "width": 9,
+    "height": 9
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/food_empty_hunger.png",
+    "sha256": "813393897b1da9251dbb775ec339cc2d2ab29cc84156ef46f68adf4a5a5b05c9",
+    "width": 9,
+    "height": 9
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/food_full.png",
+    "sha256": "4e221b26e8c4ff9b40c4bd2f95b815098cb1947798923b1241ac82fb39a89883",
+    "width": 9,
+    "height": 9
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/food_full_hunger.png",
+    "sha256": "f2a9b5fa270bfd22cd085418a11dbb07f74b9e4e48edb39b0d9400c0d82cdb35",
+    "width": 9,
+    "height": 9
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/food_half.png",
+    "sha256": "82041e6e08bed04fc4a054e3a85886d3e5411e64470b8a0aa8cca8d51db48a7a",
+    "width": 9,
+    "height": 9
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/food_half_hunger.png",
+    "sha256": "9d7906ccf6fa6ca884903c7f0a98013b3b54923d8500fcd9459674588e2939aa",
+    "width": 9,
+    "height": 9
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/heart/absorbing_full.png",
+    "sha256": "a67ac89bbe4f5c88474eb963acd620fed89641cb6e0401d03ce7be09feed5487",
+    "width": 9,
+    "height": 9
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/heart/absorbing_full_blinking.png",
+    "sha256": "36b79912ab71d5b547257504bb28e97f7145f3ec23deb44237b8dcfd2279611c",
+    "width": 9,
+    "height": 9
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/heart/absorbing_half.png",
+    "sha256": "f1b1b7659db2fef6de49d8262994bc0b86d93833e9c53546631549e77957adac",
+    "width": 9,
+    "height": 9
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/heart/absorbing_half_blinking.png",
+    "sha256": "328770c219232cbe3871c1158db4b476264f38c7eefddbd47c953fd159f1556a",
+    "width": 9,
+    "height": 9
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/heart/absorbing_hardcore_full.png",
+    "sha256": "fbd63888894f5eb1f80a208d9eb0c91a78f779243f70ad388acfaef9aa3fb221",
+    "width": 9,
+    "height": 9
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/heart/absorbing_hardcore_full_blinking.png",
+    "sha256": "9fb9b05be476c05b7bce500d15278c7339bcf2d934b2268a1624ee0526b2f19a",
+    "width": 9,
+    "height": 9
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/heart/absorbing_hardcore_half.png",
+    "sha256": "cbcc0522351be71f919e7c823ca35dc1db47fc8742db6fdbf0e4d8538781cdb8",
+    "width": 9,
+    "height": 9
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/heart/absorbing_hardcore_half_blinking.png",
+    "sha256": "76dc47e8de910a0ffd0886c7f8e702d075dac5724e2ee21f7dfe1efe94bf8d81",
+    "width": 9,
+    "height": 9
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/heart/container.png",
+    "sha256": "03cceb872cac9a74a87b2e40d28d9876e5242ed7a67fd257cdcb6d68b303e2ec",
+    "width": 9,
+    "height": 9
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/heart/container_blinking.png",
+    "sha256": "d84369eb577626361a5913767041c871bc4a2e2f85e76130eb66e4d7525b61b5",
+    "width": 9,
+    "height": 9
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/heart/container_hardcore.png",
+    "sha256": "003d8882e0d765926bc9afffd7c95881dbb246425e1744fb8694c36f45f0e27c",
+    "width": 9,
+    "height": 9
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/heart/container_hardcore_blinking.png",
+    "sha256": "2f39227371716006a8bea834dab70577d9ccdf8743a96453bbabebafbf7ea559",
+    "width": 9,
+    "height": 9
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/heart/frozen_full.png",
+    "sha256": "ada8972d9658fce00185b0af6f7fe57cfc2955fb6d1e8f58b318a9e369b2d5cc",
+    "width": 9,
+    "height": 9
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/heart/frozen_full_blinking.png",
+    "sha256": "18ea8f0537cc35c8eea978a8d402c2e0f1643ffdb4bd8e320668852effc3a62a",
+    "width": 9,
+    "height": 9
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/heart/frozen_half.png",
+    "sha256": "4733db1eed4672b568f6614a78fbb811639d63b9e17473cf9ac8e639831f6fef",
+    "width": 9,
+    "height": 9
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/heart/frozen_half_blinking.png",
+    "sha256": "310374e06029a45fbe93373797c00b4f98ab4ca2a49158d277b3aa195c06bc2e",
+    "width": 9,
+    "height": 9
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/heart/frozen_hardcore_full.png",
+    "sha256": "27328214470f56ce60e99908ce76a3809b1e565b609a945d8dce2b603927f149",
+    "width": 9,
+    "height": 9
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/heart/frozen_hardcore_full_blinking.png",
+    "sha256": "6596f2299d55b4591f0bb988c65a7ee807d548ad7441f287f19029592a2a9d62",
+    "width": 9,
+    "height": 9
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/heart/frozen_hardcore_half.png",
+    "sha256": "bb79d46de863710498869bad89bacd193b8745336b2e25422c291ee183f45cbb",
+    "width": 9,
+    "height": 9
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/heart/frozen_hardcore_half_blinking.png",
+    "sha256": "c29a068139db10b4134789b2a9ceeb6a0cbe27edcad94a8e9cd50387048ba3d3",
+    "width": 9,
+    "height": 9
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/heart/full.png",
+    "sha256": "8950c500ca3ac3e30a468d405cd67e8542afeca31c4719c20825be7ba183ed6d",
+    "width": 9,
+    "height": 9
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/heart/full_blinking.png",
+    "sha256": "0f9db684542c1054098438cdb6ef796512870c1f6affa4feaa9f46ea59b9511f",
+    "width": 9,
+    "height": 9
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/heart/half.png",
+    "sha256": "888806778b5639bcb02b19d6f81e9ec0f8a16da77795749f166ffca7ac1aee29",
+    "width": 9,
+    "height": 9
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/heart/half_blinking.png",
+    "sha256": "b8b5613efcc72e85faef53e66fc15a02b6699e349d05e8894006d4238b460940",
+    "width": 9,
+    "height": 9
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/heart/hardcore_full.png",
+    "sha256": "484026c4df798cb9201d19db186d6add7ed24be4ee05290933b6e4910e249f5e",
+    "width": 9,
+    "height": 9
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/heart/hardcore_full_blinking.png",
+    "sha256": "18abfa898bf3f5d459e8724c9a9beffa015604c270fdf2f9008c18bbd8c21dc6",
+    "width": 9,
+    "height": 9
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/heart/hardcore_half.png",
+    "sha256": "81b99085087343c007e808d8e330a15fa0eba88b7f941bcd72ec623926b7d91f",
+    "width": 9,
+    "height": 9
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/heart/hardcore_half_blinking.png",
+    "sha256": "99490fc0af55470b896217781d1f2c2227fcf8d5a7933320017df734198d11d1",
+    "width": 9,
+    "height": 9
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/heart/poisoned_full.png",
+    "sha256": "ac7791a70a4120e12ef1affec5f6ab13be3cbd0ec7baf1dbdd8ebac258d13b97",
+    "width": 9,
+    "height": 9
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/heart/poisoned_full_blinking.png",
+    "sha256": "c1321f5cfe8621c9690c878b91501e048c75d519374658d1e9a9455c21d99aca",
+    "width": 9,
+    "height": 9
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/heart/poisoned_half.png",
+    "sha256": "4dac0dd454b185e7f164e0fbabe6529336755a7755209db7a86fe9aa12adaa59",
+    "width": 9,
+    "height": 9
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/heart/poisoned_half_blinking.png",
+    "sha256": "c681ff9b83d9855d0af776dcb2862cb28697188d1cc7f5d458b8e12c8504a92e",
+    "width": 9,
+    "height": 9
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/heart/poisoned_hardcore_full.png",
+    "sha256": "65197939f15f75d148a6abb4724c30f5fe5a83f2dd6878c913b28c7f3f25a3a0",
+    "width": 9,
+    "height": 9
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/heart/poisoned_hardcore_full_blinking.png",
+    "sha256": "0e7e4e89cf8b31fe2cb1019df794107834f61a46a51bb890ea12550eaad77aaa",
+    "width": 9,
+    "height": 9
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/heart/poisoned_hardcore_half.png",
+    "sha256": "ee2d1af92e05f365c1f9fbf74b622dce1ffe4a969d5b6019cd3c582da44fcdc6",
+    "width": 9,
+    "height": 9
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/heart/poisoned_hardcore_half_blinking.png",
+    "sha256": "7a20b958f9b439a2237674a9759562f7c593632315fd546933188e6bc9620d42",
+    "width": 9,
+    "height": 9
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/heart/vehicle_container.png",
+    "sha256": "03cceb872cac9a74a87b2e40d28d9876e5242ed7a67fd257cdcb6d68b303e2ec",
+    "width": 9,
+    "height": 9
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/heart/vehicle_full.png",
+    "sha256": "cac63c638eb7f4968ea5742c6cfdeee6d08de27a99c8fd681aa287fb29198103",
+    "width": 9,
+    "height": 9
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/heart/vehicle_half.png",
+    "sha256": "6ca4733a20fe9af8f3ecbe52f9482e5d4c974b972f8c63d95f60f0cf633bc3b1",
+    "width": 9,
+    "height": 9
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/heart/withered_full.png",
+    "sha256": "af4853f7804dac67a645631c07a28699b9fee256ca4bdd4e9c28cd3dd8595b89",
+    "width": 9,
+    "height": 9
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/heart/withered_full_blinking.png",
+    "sha256": "201716dee6ffa97e2562d7d16ef9a2ec251c9a516e419e33fb51e833fbdd38e5",
+    "width": 9,
+    "height": 9
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/heart/withered_half.png",
+    "sha256": "d828da56fec972e233d2b177aecb347d3b02fad2ff084c3e54402af7edd77e1d",
+    "width": 9,
+    "height": 9
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/heart/withered_half_blinking.png",
+    "sha256": "410d2fdc7867a3592ab26f73c7ead1a47e1caadc058dc1be72a3dee6d8f438b7",
+    "width": 9,
+    "height": 9
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/heart/withered_hardcore_full.png",
+    "sha256": "b997dc93b1512b5fb5800f000779757a56b23b6a0f148dbd6d58117cee71d295",
+    "width": 9,
+    "height": 9
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/heart/withered_hardcore_full_blinking.png",
+    "sha256": "e6cd2c0dab08fffce4c3319c3cb138136e1aac6742826f82aefb3003dfc51f32",
+    "width": 9,
+    "height": 9
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/heart/withered_hardcore_half.png",
+    "sha256": "827ce012c6f8b2bb1fd1357fa85cffdb46a77dbf108684f89bb2816e6b75d278",
+    "width": 9,
+    "height": 9
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/heart/withered_hardcore_half_blinking.png",
+    "sha256": "359975704e2c3a74a7824d9b4cd07582943979f19e6fa842b17cf9375864c8f4",
+    "width": 9,
+    "height": 9
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/hotbar.png",
+    "sha256": "532a869d0219444087c309f3b5f69c07945995a2395449b5ba1b787a7530c3b7",
+    "width": 182,
+    "height": 22
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/hotbar_attack_indicator_background.png",
+    "sha256": "fedcc07703ea0ba9b99a84e071b85b1ae4f427515a90ede64d4040a6046172cf",
+    "width": 18,
+    "height": 18
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/hotbar_attack_indicator_progress.png",
+    "sha256": "a3d83424d392ce6d4ac7ce592cea406c337627dd6a62d3fc61ccec1f128d9d78",
+    "width": 18,
+    "height": 18
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/hotbar_offhand_left.png",
+    "sha256": "ee6878300ce58e1a3e593d7ff38f7d448260b958ec42f3c90a4abcfc4420a014",
+    "width": 29,
+    "height": 24
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/hotbar_offhand_right.png",
+    "sha256": "cc7a994cbb3de5face85dc18340b7e90604fcdd5ac5980f1d0f7a39ace215d6d",
+    "width": 29,
+    "height": 24
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/hotbar_selection.png",
+    "sha256": "cc65ce71c3c760b61d0a1a2ccf9170bf9494e6f4bbb33128cab2a3592d5bd27d",
+    "width": 24,
+    "height": 23
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/jump_bar_background.png",
+    "sha256": "0fb4660a83fc687584a0fe331beaa28b6e2ff1f99c4c37d2f2c9a9d96fce5902",
+    "width": 182,
+    "height": 5
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/jump_bar_cooldown.png",
+    "sha256": "8646fe15a2197d7f35f8e424b2fdcdc00ec4a597dde68750d1f1decd5acf07fc",
+    "width": 182,
+    "height": 5
+  },
+  {
+    "path": "assets/minecraft/textures/gui/sprites/hud/jump_bar_progress.png",
+    "sha256": "e9bcbf06893a228e40bc795168815d3f5449bce386efd263b2c19ff8358af168",
+    "width": 182,
+    "height": 5
+  }
+]

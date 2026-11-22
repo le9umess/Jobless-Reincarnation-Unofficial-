@@ -55,7 +55,10 @@ public final class TutorInteractions {
         if (last != null && now >= last && now - last < REPLY_INTERVAL_TICKS) return;
         // A rejected duplicate must not extend the conversation or steal another player's gaze.
         if (!tutor.beginConversation(player)) return;
-        player.sendSystemMessage(TutorLessons.message(player));
+        if (!IcicleLesson.interact(player,tutor)) {
+            player.sendSystemMessage(TutorLessons.message(player));
+            if (player.getMainHandItem().is(dev.joblessreincarnation.registry.ModContent.TRAINING_STAFF.get()) && IcicleLesson.progress(player).stage()==0) player.sendSystemMessage(net.minecraft.network.chat.Component.translatable("message.jobless_reincarnation.icicle.lesson.start_hint"));
+        }
         REPLIES.computeIfAbsent(tutor, ignored -> new HashMap<>()).put(player.getUUID(), now);
         // Teaching comes first: asking about a course ends a greeting under way. Anything else said while she greets gets
         // its private reply and lets her finish greeting the person she is facing.

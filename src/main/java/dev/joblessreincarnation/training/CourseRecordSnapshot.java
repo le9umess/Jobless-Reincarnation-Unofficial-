@@ -24,7 +24,7 @@ public record CourseRecordSnapshot(
     private static final int MAX_STAGE = 15;
     private static final int MAX_COUNT = 1000;
 
-    public enum Course { WATER_BOLT, FIRE_BALL, SWORD }
+    public enum Course { WATER_BOLT, FIRE_BALL, SWORD, ICICLE_FIELD }
 
     public CourseRecordSnapshot {
         if (course == null) throw new IllegalArgumentException("course is required");

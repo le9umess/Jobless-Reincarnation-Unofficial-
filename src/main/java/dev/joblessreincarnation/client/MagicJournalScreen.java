@@ -277,8 +277,8 @@ public final class MagicJournalScreen extends Screen {
                 y = addDetail(text("cast", minecraft.options.keyUse.getTranslatedKeyMessage()), INK, y);
                 y = addDetail(text("cancel", minecraft.options.keyShift.getTranslatedKeyMessage()), MUTED, y) + 4;
             }
-            y = addDetail(text("tome", browsed.tomeItem().getDefaultInstance().getHoverName()), ACCENT, y);
-            y = addDetail(text("study", minecraft.options.keyUse.getTranslatedKeyMessage(),
+            y = addDetail(browsed.tomeItem()==null ? text("teacher_icicle") : text("tome", browsed.tomeItem().getDefaultInstance().getHoverName()), ACCENT, y);
+            if (browsed.tomeItem()!=null) y = addDetail(text("study", minecraft.options.keyUse.getTranslatedKeyMessage(),
                     seconds(MagicConfig.STUDY_TICKS.getAsInt())), MUTED, y);
             if (browsed == SpellCatalog.STONE_CANNON)
                 y = addDetail(text("prerequisites.stone_cannon", SpellCatalog.EARTH_WALL.title()), MUTED, y);
@@ -337,7 +337,9 @@ public final class MagicJournalScreen extends Screen {
             int known = 0;
             for (SpellCatalog spell : SpellCatalog.values()) if (spell.knows(owner)) known++;
             Component count = text("learned_count", known, SpellCatalog.values().length);
-            graphics.drawString(font, count, left + panelWidth - 112 - font.width(count), top + 15, MUTED, false);
+            int countX = left + 15 + font.width(title) + 8;
+            boolean besideTitle = countX + font.width(count) <= left + panelWidth - 182;
+            graphics.drawString(font, count, besideTitle ? countX : left + 15, top + (besideTitle ? 15 : 25), MUTED, false);
         }
         graphics.enableScissor(detailX, bodyTop, detailX + detailWidth, bodyBottom);
         for (DetailLine line : detailLines) {
@@ -449,6 +451,7 @@ public final class MagicJournalScreen extends Screen {
             case FIRE_BALL -> MagicConfig.FIRE_BALL_CHANT_TICKS.getAsInt();
             case MIRE -> MagicConfig.MIRE_CHANT_TICKS.getAsInt();
             case STONE_CANNON -> MagicConfig.STONE_CANNON_CHANT_TICKS.getAsInt();
+            case ICICLE_FIELD -> MagicConfig.ICICLE_FIELD_CHANT_TICKS.getAsInt();
         };
     }
     private record DetailLine(FormattedCharSequence text, int y, int color) {}
@@ -461,7 +464,7 @@ public final class MagicJournalScreen extends Screen {
         SpellRow(SpellCatalog spell, int x, int y, int width, int height) {
             super(x, y, width, height, spell.title(), ignored -> browse(spell), DEFAULT_NARRATION);
             this.spell = spell;
-            icon = spell.tomeItem().getDefaultInstance();
+            icon = spell.iconItem().getDefaultInstance();
         }
         void refresh(boolean ready) {
             active = ready;
@@ -495,7 +498,8 @@ public final class MagicJournalScreen extends Screen {
                 graphics.fill(x + 1, y + 1, x + 3, y + getHeight() - 1, 0xFF527854);
                 graphics.drawString(font, "*", x + getWidth() - 7, y + 2, GREEN, false);
             }
-            graphics.renderItem(icon, x + 5, y + (getHeight() - 16) / 2);
+            if (SpellIcons.has(spell)) SpellIcons.drawLarge(graphics, spell, x + 5, y + (getHeight() - 16) / 2);
+            else graphics.renderItem(icon, x + 5, y + (getHeight() - 16) / 2);
             int textX = x + 25;
             int lineY = y + Math.max(1, (getHeight() - 22) / 2);
             renderScrollingString(graphics, font, spell.title(), textX, lineY,

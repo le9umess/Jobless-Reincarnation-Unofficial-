@@ -519,6 +519,16 @@ public final class PaulDuelGameTests {
     @GameTest(template="p01_arena",timeoutTicks=280)
     public static void mireReallySlowsPaulBeforeTheTelegraphedEscape(GameTestHelper h){
         Setup s=setup(h);begin(s,(x,b)->phaseTwo(s,b,()->{
+            boolean pvp = s.player.server.isPvpAllowed();
+            try {
+                s.player.server.setPvpAllowed(true);
+                h.assertFalse(dev.joblessreincarnation.magic.MireTargets.eligible(s.peer,s.player),
+                        "Non-damaging control from an outsider cannot affect the enrolled player");
+                h.assertFalse(dev.joblessreincarnation.magic.MireTargets.eligible(s.peer,s.paul),
+                        "An outsider cannot control Paul during another player's duel");
+            } finally {
+                s.player.server.setPvpAllowed(pvp);
+            }
             s.player.setPos(s.paul.position().add(0,0,-6));s.paul.setNoAi(false);Vec3 start=s.paul.position();
             var field=new dev.joblessreincarnation.magic.MireEntity(h.getLevel(),s.player,start);
             s.fixture.admit(field,h.relativeVec(start));dev.joblessreincarnation.magic.MireFields.activate(field);
@@ -603,4 +613,33 @@ public final class PaulDuelGameTests {
         }));
     }
 
+
+    @GameTest(template="p01_arena",timeoutTicks=280)
+    public static void icicleRespectsBoutTargetsAndScoresOnlyInSecondPhase(GameTestHelper h){
+        Setup s=setup(h);begin(s,(x,b)->{
+            boolean pvp=s.player.server.isPvpAllowed();s.player.server.setPvpAllowed(true);
+            try{h.assertTrue(!dev.joblessreincarnation.magic.IcicleFields.eligible(s.peer,s.player),"outsider cannot silently slow the enrolled player");}
+            finally{s.player.server.setPvpAllowed(pvp);}
+            s.player.getData(ModAttachments.KNOWLEDGE).learn(SpellCatalog.ICICLE_FIELD.id());
+            s.player.setItemInHand(InteractionHand.MAIN_HAND,ModContent.TRAINING_STAFF.get().getDefaultInstance());
+            float beforeMana=s.player.getData(ModAttachments.MANA).mana();
+            h.assertTrue(!dev.joblessreincarnation.magic.IcicleSpell.cast(s.player),"first phase rejects ice before payment");
+            h.assertTrue(s.player.getData(ModAttachments.MANA).mana()==beforeMana,"rejected first-phase ice costs nothing");
+            phaseTwo(s,b,()->{
+                s.player.setItemInHand(InteractionHand.MAIN_HAND,ModContent.TRAINING_STAFF.get().getDefaultInstance());
+                s.player.setData(ModAttachments.MANA,dev.joblessreincarnation.magic.ManaData.full(100));
+                s.player.getCooldowns().removeCooldown(ModContent.TRAINING_STAFF.get());
+                Vec3 aim=s.paul.position().subtract(s.player.getEyePosition());
+                s.player.setYRot((float)Math.toDegrees(Math.atan2(-aim.x,aim.z)));s.player.setXRot((float)-Math.toDegrees(Math.atan2(aim.y,aim.horizontalDistance())));
+                var bolt=new dev.joblessreincarnation.magic.WaterBolt(s.player.serverLevel(),s.player);
+                bolt.setPos(s.player.getEyePosition());bolt.setDeltaMovement(s.paul.getBoundingBox().getCenter().subtract(bolt.position()).normalize().scale(1.5));
+                s.player.serverLevel().addFreshEntity(bolt);s.paul.invulnerableTime=0;
+                for(int n=0;n<5&&!bolt.isRemoved();n++)bolt.tick();
+                h.assertTrue(dev.joblessreincarnation.magic.IcicleWet.contact(s.paul,s.player.getUUID()),"real water collision wets a score-protected NPC even though health stays fixed");
+                h.assertTrue(dev.joblessreincarnation.magic.IcicleSpell.cast(s.player),"second phase accepts a real paid field");
+                s.paul.invulnerableTime=0;float score=b.remaining;
+                after(s,15,()->{h.assertTrue(b.remaining<score,"registered owner field's nova lowers the duel bar");h.assertTrue(s.paul.getHealth()==20,"story NPC health preserved");done(s);});
+            });
+        });
+    }
 }

@@ -8,6 +8,7 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
@@ -123,20 +124,35 @@ public final class WaterBolt extends ThrowableItemProjectile {
         }
     }
 
+    /** Only water gets this narrow practice interaction; the prop remains non-projectile-targetable otherwise. */
+    @Override
+    protected boolean canHitEntity(Entity target) {
+        if (target instanceof dev.joblessreincarnation.training.PracticeDummyEntity dummy) {
+            return getOwner() instanceof ServerPlayer player && player.isAlive() && !player.isRemoved() && !player.isSpectator()
+                    && player.level() == level() && dummy.level() == level() && !dummy.isRemoved()
+                    && player.getUUID().equals(dummy.ownerId()) && dummy.hasSupport();
+        }
+        return super.canHitEntity(target);
+    }
+
     @Override
     protected void onHitEntity(EntityHitResult hit) {
         super.onHitEntity(hit);
         if (level().isClientSide) return;
         Entity target = hit.getEntity();
         Entity caster = getOwner();
+        if (target instanceof dev.joblessreincarnation.training.PracticeDummyEntity) IcicleWet.splash(target,caster);
         if (target instanceof LivingEntity living) {
             // Keep the original direct-hit rules; collateral damage has its own stricter target selection.
             if (caster instanceof Player attacker && living instanceof Player victim && !attacker.canHarmPlayer(victim)) return;
             float health = living.getHealth(), absorption = living.getAbsorptionAmount();
+            float practiceScore = dev.joblessreincarnation.encounter.PaulDuel.score(living);
             boolean accepted = living.hurt(damageSources().thrown(this, caster), getDamage());
-            boolean loss = living.getHealth() < health || living.getAbsorptionAmount() < absorption;
+            boolean loss = living.getHealth() < health || living.getAbsorptionAmount() < absorption
+                    || practiceScore >= 0 && dev.joblessreincarnation.encounter.PaulDuel.score(living) < practiceScore;
             living.clearFire();
             if (accepted && loss) {
+                IcicleWet.splash(living,caster);
                 living.removeEffect(ModContent.SEARING);
                 if (caster instanceof LivingEntity owner) AttackSpellImpact.applyDebuff(owner, living, SpellCatalog.WATER_BOLT, formStage());
             }

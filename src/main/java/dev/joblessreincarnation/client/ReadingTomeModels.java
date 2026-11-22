@@ -34,13 +34,14 @@ public final class ReadingTomeModels {
     }
 
     public static void register(ModelEvent.RegisterAdditional event) {
-        for (var spell : SpellCatalog.values()) event.register(spread(spell.tomeItem()));
+        for (var spell : SpellCatalog.values()) if(spell.tomeItem()!=null) event.register(spread(spell.tomeItem()));
     }
 
     public static void bake(ModelEvent.ModifyBakingResult event) {
         var models = event.getModels();
         for (var spell : SpellCatalog.values()) {
             Item item = spell.tomeItem();
+            if(item==null) continue;
             var id = ModelResourceLocation.inventory(BuiltInRegistries.ITEM.getKey(item));
             var closed = models.get(id);
             var pages = models.get(spread(item));

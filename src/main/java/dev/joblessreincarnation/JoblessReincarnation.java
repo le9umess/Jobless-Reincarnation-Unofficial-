@@ -31,9 +31,12 @@ public final class JoblessReincarnation {
         dev.joblessreincarnation.compat.epic.EpicNpcRemodel.install(modEventBus);
         dev.joblessreincarnation.compat.epic.RastaBearCombat.install(modEventBus);
         MireFields.register(NeoForge.EVENT_BUS);
+        dev.joblessreincarnation.magic.IcicleFields.register(NeoForge.EVENT_BUS);
         ModStructures.register(modEventBus);
         modEventBus.addListener(ModNetworking::register);
         container.registerConfig(ModConfig.Type.SERVER, MagicConfig.SPEC);
+        // Development diagnostics for the combat view, off unless -Djobless.combatview.trace=true.
+        if (dev.joblessreincarnation.combat.CombatViewTrace.ENABLED) NeoForge.EVENT_BUS.addListener(dev.joblessreincarnation.combat.CombatViewTrace::onEntityJoin);
         NeoForge.EVENT_BUS.addListener(ManaEvents::onPlayerTick);
         NeoForge.EVENT_BUS.addListener(ManaEvents::onLogin);
         NeoForge.EVENT_BUS.addListener(ManaEvents::onRespawn);

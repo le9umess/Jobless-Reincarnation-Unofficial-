@@ -22,6 +22,15 @@ import net.neoforged.neoforge.common.NeoForge;
 public final class JoblessReincarnationClient {
     public JoblessReincarnationClient(IEventBus modEventBus, net.neoforged.fml.ModContainer container) {
         container.registerConfig(net.neoforged.fml.config.ModConfig.Type.CLIENT, HudConfig.SPEC);
+        // Mods > this mod > Config: the client settings only, so the server's magic settings are not offered here.
+        container.registerExtensionPoint(net.neoforged.neoforge.client.gui.IConfigScreenFactory.class, (mod, parent) -> ClientSettingsScreen.open(mod, parent));
+        // Combat view: one point-of-view owner per tick, the staff turned to the crosshair once Epic Fight places its camera.
+        NeoForge.EVENT_BUS.addListener(dev.joblessreincarnation.client.combat.CombatView::afterClientTick);
+        NeoForge.EVENT_BUS.addListener(dev.joblessreincarnation.client.combat.CombatView::onLoggingOut);
+        yesman.epicfight.api.client.event.EpicFightClientEventHooks.Camera.BUILD_TRANSFORM_POST.registerEvent(dev.joblessreincarnation.client.combat.StaffAim::afterCameraBuilt);
+        modEventBus.addListener(dev.joblessreincarnation.client.hud.BrassHudPack::register);
+        modEventBus.addListener(dev.joblessreincarnation.client.hud.BrassHudPack::reloadListener);
+        NeoForge.EVENT_BUS.addListener(dev.joblessreincarnation.client.hud.BrassHudPack::finishFirstSelection);
         dev.joblessreincarnation.client.epic.EpicV01Client.install();
         dev.joblessreincarnation.client.epic.EpicNpcRemodelClient.install();
         dev.joblessreincarnation.client.aura.AuraLayer.install();
@@ -86,6 +95,7 @@ public final class JoblessReincarnationClient {
         event.registerEntityRenderer(ModContent.FIRE_BALL.get(), FireBallRenderer::new);
         event.registerEntityRenderer(ModContent.WATER_SHIELD.get(), WaterShieldRenderer::new);
         event.registerEntityRenderer(ModContent.MIRE.get(), MireRenderer::new);
+        event.registerEntityRenderer(ModContent.ICICLE_FIELD.get(), IcicleFieldRenderer::new);
         event.registerEntityRenderer(ModContent.STONE_CANNON.get(), StoneCannonRenderer::new);
         // Formal OFF3-02 geometry, animation and texture ship in main resources for ordinary clients.
         event.registerEntityRenderer(ModContent.PRACTICE_DUMMY.get(), PracticeDummyRenderer::new);
@@ -97,6 +107,7 @@ public final class JoblessReincarnationClient {
     }
 
     private void registerHud(RegisterGuiLayersEvent event) {
+        event.registerBelow(net.neoforged.neoforge.client.gui.VanillaGuiLayers.CAMERA_OVERLAYS, ResourceLocation.fromNamespaceAndPath(JoblessReincarnation.MOD_ID, "icicle_cold"), IcicleColdOverlay::render);
         event.registerAbove(net.neoforged.neoforge.client.gui.VanillaGuiLayers.HOTBAR, ResourceLocation.fromNamespaceAndPath(JoblessReincarnation.MOD_ID, "spell_recall"), SpellRecallBar::render);
         event.registerAboveAll(ResourceLocation.fromNamespaceAndPath(JoblessReincarnation.MOD_ID, "mana"), ManaHud::render);
         event.registerAboveAll(ResourceLocation.fromNamespaceAndPath(JoblessReincarnation.MOD_ID, "mana_reading"), ManaReadingPanel::render);
@@ -110,6 +121,6 @@ public final class JoblessReincarnationClient {
     private void registerItemExtensions(RegisterClientExtensionsEvent event) {
         event.registerItem(new WandClientExtensions(), ModContent.TRAINING_STAFF.get());
         var reading = new TomeReading();
-        for (var spell : dev.joblessreincarnation.magic.SpellCatalog.values()) event.registerItem(reading, spell.tomeItem());
+        for (var spell : dev.joblessreincarnation.magic.SpellCatalog.values()) if(spell.tomeItem()!=null) event.registerItem(reading, spell.tomeItem());
     }
 }

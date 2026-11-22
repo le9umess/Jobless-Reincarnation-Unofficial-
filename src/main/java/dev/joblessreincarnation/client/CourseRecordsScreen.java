@@ -22,7 +22,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import org.lwjgl.glfw.GLFW;
 
 /**
- * Read-only views of the three existing lessons. The server is authoritative; this screen never
+ * Read-only views of the player's lessons. The server is authoritative; this screen never
  * starts, recognizes, claims, or duplicates a course.
  */
 public final class CourseRecordsScreen extends Screen {
@@ -85,6 +85,7 @@ public final class CourseRecordsScreen extends Screen {
         activeScreen = this;
         requestSnapshot();
         setInitialFocus(rows.get(browsed));
+        ensureNavVisible(rows.get(browsed));
     }
 
     public static void receive(CourseRecordsResponsePayload payload) {
@@ -179,6 +180,7 @@ public final class CourseRecordsScreen extends Screen {
             case WATER_BOLT -> response.water();
             case FIRE_BALL -> response.fire();
             case SWORD -> response.sword();
+            case ICICLE_FIELD -> response.icicle();
         };
     }
 
@@ -195,6 +197,11 @@ public final class CourseRecordsScreen extends Screen {
                 case WATER_BOLT -> y = waterDetails(record, y);
                 case FIRE_BALL -> y = fireDetails(record, y);
                 case SWORD -> y = swordDetails(record, y);
+                case ICICLE_FIELD -> {
+                    y=factCount(y,"ice",record.primary(),record.primaryTarget());
+                    y=fact(y,"nova",record.secondary()>0);
+                    y=addDetail(text("icicle.next."+record.stage()),MUTED,y+4);
+                }
             }
             y += 5;
             y = addDetail(text("note"), MUTED, y);
@@ -274,6 +281,7 @@ public final class CourseRecordsScreen extends Screen {
                 case 2 -> "fire_distance";
                 default -> "done";
             };
+            case ICICLE_FIELD -> "icicle.stage."+r.stage();
             case SWORD -> switch (r.stage()) {
                 case 0 -> "sword_unstarted";
                 case 1 -> "sword_practice";
@@ -284,7 +292,7 @@ public final class CourseRecordsScreen extends Screen {
     }
 
     private Component courseTitle(CourseRecordSnapshot.Course course) {
-        return text(course == CourseRecordSnapshot.Course.WATER_BOLT ? "water.title"
+        return text(course == CourseRecordSnapshot.Course.ICICLE_FIELD ? "icicle.title" : course == CourseRecordSnapshot.Course.WATER_BOLT ? "water.title"
                 : course == CourseRecordSnapshot.Course.FIRE_BALL ? "fire.title" : "sword.title");
     }
 
@@ -402,6 +410,7 @@ public final class CourseRecordsScreen extends Screen {
                 case WATER_BOLT -> response.water();
                 case FIRE_BALL -> response.fire();
                 case SWORD -> response.sword();
+            case ICICLE_FIELD -> response.icicle();
             };
             stage = record == null ? text(pendingTicks > 100 ? "failed" : "loading")
                     : text("status", statusComponent(record));

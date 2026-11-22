@@ -21,8 +21,12 @@ public record CourseRecordsResponsePayload(
         int nonce,
         CourseRecordSnapshot water,
         CourseRecordSnapshot fire,
-        CourseRecordSnapshot sword
+        CourseRecordSnapshot sword,
+        CourseRecordSnapshot icicle
 ) implements CustomPacketPayload {
+    public CourseRecordsResponsePayload(int nonce,CourseRecordSnapshot water,CourseRecordSnapshot fire,CourseRecordSnapshot sword) {
+        this(nonce,water,fire,sword,new CourseRecordSnapshot(CourseRecordSnapshot.Course.ICICLE_FIELD,0,0,6,0,1,false,false));
+    }
     public static final Type<CourseRecordsResponsePayload> TYPE = new Type<>(
             ResourceLocation.fromNamespaceAndPath(JoblessReincarnation.MOD_ID, "course_records_response"));
 
@@ -33,13 +37,15 @@ public record CourseRecordsResponsePayload(
                         CourseRecordSnapshot.STREAM_CODEC.encode(buffer, value.water());
                         CourseRecordSnapshot.STREAM_CODEC.encode(buffer, value.fire());
                         CourseRecordSnapshot.STREAM_CODEC.encode(buffer, value.sword());
+                        CourseRecordSnapshot.STREAM_CODEC.encode(buffer, value.icicle());
                     },
                     buffer -> new CourseRecordsResponsePayload(buffer.readVarInt(),
                             CourseRecordSnapshot.STREAM_CODEC.decode(buffer),
                             CourseRecordSnapshot.STREAM_CODEC.decode(buffer),
+                            CourseRecordSnapshot.STREAM_CODEC.decode(buffer),
                             CourseRecordSnapshot.STREAM_CODEC.decode(buffer)));
 
-    /** Computes all three records from the server's existing read-only guidance/progress views. */
+    /** Computes all four records from the server's existing read-only guidance/progress views. */
     public static CourseRecordsResponsePayload fromPlayer(int nonce, ServerPlayer player) {
         TutorGuidance.Snapshot water = TutorGuidance.snapshot(player);
         FireTutorGuidance.Snapshot fire = FireTutorGuidance.snapshot(player);
@@ -60,7 +66,8 @@ public record CourseRecordsResponsePayload(
                         swordPhase.ordinal(), swordProgress == null ? 0 : swordProgress.hits(),
                         SwordTrainingProgress.GOAL, 0, 0,
                         swordProgress != null && swordProgress.recognized(),
-                        swordPhase == SwordTrainingProgress.Phase.DONE));
+                        swordPhase == SwordTrainingProgress.Phase.DONE),
+                dev.joblessreincarnation.npc.IcicleLesson.snapshot(player));
     }
 
     @Override

@@ -309,12 +309,17 @@ public final class MireGameTests {
         for (int x = -2; x <= 2; x++) for (int z = -2; z <= 2; z++) {
             BlockPos support = center.offset(x, -1, z);
             BlockState original = helper.getLevel().getBlockState(support);
+            BlockState below = helper.getLevel().getBlockState(support.below());
             try {
+                helper.getLevel().setBlock(support.below(), Blocks.AIR.defaultBlockState(), 2);
                 helper.getLevel().setBlock(support, Blocks.AIR.defaultBlockState(), 2);
                 boolean corner = Math.abs(x) == 2 && Math.abs(z) == 2;
                 helper.assertValueEqual(MireGround.isValid(helper.getLevel(), base), corner,
                         "Only the four visually absent corner cells may lack ground: " + x + "," + z);
-            } finally { helper.getLevel().setBlock(support, original, 2); }
+            } finally {
+                helper.getLevel().setBlock(support.below(), below, 2);
+                helper.getLevel().setBlock(support, original, 2);
+            }
         }
         BlockPos edge = center.offset(2, 0, 1);
         for (int layer = -1; layer <= 1; layer++) {
@@ -326,7 +331,7 @@ public final class MireGameTests {
             } finally { helper.getLevel().setBlock(at, original, 2); }
         }
         // One-layer snow has EMPTY collision; the agreed snow exclusion is explicit, unlike collision-free grass.
-        for (BlockState obstruction : List.of(Blocks.STONE.defaultBlockState(), Blocks.OAK_SLAB.defaultBlockState(),
+        for (BlockState obstruction : List.of(Blocks.OAK_SLAB.defaultBlockState(),
                 Blocks.WHITE_CARPET.defaultBlockState(), Blocks.SNOW.defaultBlockState(),
                 Blocks.SNOW.defaultBlockState().setValue(SnowLayerBlock.LAYERS, 2), Blocks.POWDER_SNOW.defaultBlockState())) {
             helper.getLevel().setBlock(edge, obstruction, 2);
@@ -362,15 +367,94 @@ public final class MireGameTests {
     }
 
     @GameTest(template = "empty")
+    public static void elevatedAndLoweredMireCellsUseTheirOwnSurfaceForContact(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        Caster player = caster(helper);
+        Vec3 center = MireGround.findBase(level, player);
+        helper.assertTrue(center != null, "The aimed center starts on clear, solid ground");
+        BlockPos edge = BlockPos.containing(center).east();
+        var lowerSupport = level.getBlockState(edge.below(2));
+        var support = level.getBlockState(edge.below());
+        var feet = level.getBlockState(edge);
+        Husk mob = target(helper, EntityType.HUSK, center.add(1, 0, 0));
+        try {
+            for (int delta : new int[]{1, -1}) {
+                level.setBlock(edge.below(2), Blocks.STONE.defaultBlockState(), 2);
+                level.setBlock(edge.below(), delta > 0 ? support : Blocks.AIR.defaultBlockState(), 2);
+                level.setBlock(edge, delta > 0 ? Blocks.STONE.defaultBlockState() : feet, 2);
+                ready(player);
+                helper.assertTrue(MireSpell.cast(player), "A dry one-block step can be cast on: " + delta);
+                MireEntity field = onlyField(helper, player);
+                age(field, MireEntity.FORM_TICKS);
+                mob.setPos(Vec3.atBottomCenterOf(edge.above(delta)));
+                mob.setOnGround(true);
+                resolve(helper);
+                helper.assertTrue(field.surfaceCells().contains(edge.above(delta)), "The visible surface follows the step");
+                helper.assertTrue(slowed(mob), "Feet on the actual step receive the field modifier");
+                mob.setPos(Vec3.atBottomCenterOf(edge));
+                mob.setOnGround(true);
+                resolve(helper);
+                helper.assertFalse(slowed(mob), "Feet at the old flat height in the same column lose the modifier");
+                level.setBlock(edge.below(), support, 2);
+                level.setBlock(edge, feet, 2);
+                resolve(helper);
+                helper.assertTrue(!field.isRemoved() && field.surfaceCells().contains(edge) && slowed(mob),
+                        "An active field follows a valid terrain edit on the next sweep, even in the same tick");
+            }
+        } finally {
+            level.setBlock(edge.below(2), lowerSupport, 2);
+            level.setBlock(edge.below(), support, 2);
+            level.setBlock(edge, feet, 2);
+            mob.discard();
+            close(helper, player);
+        }
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty")
+    public static void mireRejectsTwoLevelsOfReliefWithoutCharging(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        Caster player = caster(helper);
+        Vec3 base = MireGround.findBase(level, player);
+        helper.assertTrue(base != null, "A valid flat patch is available");
+        BlockPos center = BlockPos.containing(base);
+        BlockPos ridge = center.east(), dip = center.west().below();
+        var floor = level.getBlockState(dip);
+        var subfloor = level.getBlockState(dip.below());
+        try {
+            level.setBlock(ridge, Blocks.STONE.defaultBlockState(), 2);
+            level.setBlock(ridge.above(), Blocks.STONE.defaultBlockState(), 2);
+            helper.assertFalse(MireSpell.cast(player), "A two-block ledge rejects the cast");
+            free(helper, player, 0, "Two-block ledge");
+            level.setBlock(ridge.above(), Blocks.AIR.defaultBlockState(), 2);
+            level.setBlock(dip.below(), Blocks.STONE.defaultBlockState(), 2);
+            level.setBlock(dip, Blocks.AIR.defaultBlockState(), 2);
+            helper.assertFalse(MireSpell.cast(player), "A ridge one above aim and a dip one below span two blocks");
+            free(helper, player, 0, "Two levels across the footprint");
+            helper.assertTrue(fields(helper).isEmpty(), "Both rejected releases leave the area clear");
+        } finally {
+            level.setBlock(ridge.above(), Blocks.AIR.defaultBlockState(), 2);
+            level.setBlock(ridge, Blocks.AIR.defaultBlockState(), 2);
+            level.setBlock(dip.below(), subfloor, 2);
+            level.setBlock(dip, floor, 2);
+            close(helper, player);
+        }
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty")
     public static void invalidVisibleGroundRangeAndWallsFailBeforePayment(GameTestHelper helper) {
         Caster player = caster(helper);
         Vec3 base = MireGround.findBase(helper.getLevel(), player);
         helper.assertTrue(base != null, "Control aim is valid");
         BlockPos edge = BlockPos.containing(base).offset(2, -1, 1);
         BlockState original = helper.getLevel().getBlockState(edge);
+        BlockState below = helper.getLevel().getBlockState(edge.below());
+        helper.getLevel().setBlock(edge.below(), Blocks.AIR.defaultBlockState(), 2);
         helper.getLevel().setBlock(edge, Blocks.AIR.defaultBlockState(), 2);
         helper.assertFalse(MireSpell.cast(player), "An edge hole rejects the cast, not just a center check");
         free(helper, player, 0, "Hole");
+        helper.getLevel().setBlock(edge.below(), below, 2);
         helper.getLevel().setBlock(edge, original, 2);
         player.setXRot(0);
         helper.assertFalse(MireSpell.cast(player), "A horizontal miss is not a valid ground hit");
@@ -486,7 +570,7 @@ public final class MireGameTests {
                         switch (selected) {
                             case 0 -> player.setData(ModAttachments.MANA, new ManaData(0, 100, 0, 0));
                             case 1 -> player.setItemInHand(InteractionHand.MAIN_HAND, ModContent.TRAINING_STAFF.get().getDefaultInstance());
-                            case 2 -> helper.getLevel().setBlock(edge, Blocks.AIR.defaultBlockState(), 2);
+                            case 2 -> helper.getLevel().setBlock(edge, Blocks.WATER.defaultBlockState(), 2);
                             case 3 -> field.discard();
                             case 4 -> field.setPos(field.position().add(0, 1, 0));
                             case 5 -> {
@@ -546,7 +630,7 @@ public final class MireGameTests {
             }
             age(field, 10); resolve(helper);
             helper.assertTrue(slowed(target), "Contact has resumed in this isolated phase fixture");
-            helper.getLevel().setBlock(field.blockPosition().offset(2, -1, 1), Blocks.AIR.defaultBlockState(), 2);
+            helper.getLevel().setBlock(field.blockPosition().offset(2, -1, 1), Blocks.WATER.defaultBlockState(), 2);
             resolve(helper);
             helper.assertTrue(field.isRemoved(), "Losing any effective support ends the whole field");
             helper.assertFalse(slowed(target), "Unsupported terrain removes the field's modifier in that same level pass");
@@ -555,39 +639,96 @@ public final class MireGameTests {
     }
 
     @GameTest(template = "empty")
-    public static void targetsUseTheSpecifiedWhitelistAndExcludeNpcPetPassengerAndAirborneContexts(GameTestHelper helper) {
+    public static void aPaidMireSlowsGroundedCreaturesAndLeavesStoryCharactersFree(GameTestHelper helper) {
         Caster player = caster(helper);
         helper.assertTrue(MireSpell.cast(player), "Field forms");
         MireEntity field = onlyField(helper, player);
         age(field, 10);
         List<Mob> mobs = new ArrayList<>();
+        List<Mob> storyCharacters = new ArrayList<>();
         try {
-            for (EntityType<? extends Mob> type : List.of(EntityType.ZOMBIE, EntityType.HUSK, EntityType.SKELETON, EntityType.STRAY, EntityType.CREEPER)) {
-                Mob mob = target(helper, type, field.position()); mobs.add(mob);
-                helper.assertTrue(MireTargets.eligible(player, mob), "Default supported ground enemy: " + type);
+            for (EntityType<? extends Mob> type : List.of(EntityType.HUSK, EntityType.SPIDER, EntityType.COW,
+                    EntityType.SQUID, EntityType.BLAZE, EntityType.VILLAGER)) {
+                mobs.add(target(helper, type, field.position()));
+            }
+            var wolf = target(helper, EntityType.WOLF, field.position());
+            mobs.add(wolf);
+            for (EntityType<? extends Mob> type : List.of(ModContent.PAUL_GREYRAT.get(), ModContent.ZENITH_GREYRAT.get(),
+                    ModContent.LILIA_GREYRAT.get(), ModContent.ROXY_TUTOR.get(), ModContent.SYLPHIETTE.get())) {
+                storyCharacters.add(target(helper, type, field.position()));
             }
             resolve(helper);
-            for (Mob mob : mobs) helper.assertTrue(slowed(mob), "Every supported default type is slowed on the effective floor");
-            for (Mob mob : mobs) mob.discard();
-            mobs.clear(); resolve(helper);
-            for (EntityType<? extends Mob> type : List.of(EntityType.SPIDER, EntityType.WOLF, EntityType.COW,
-                    EntityType.BLAZE, EntityType.SQUID, ModContent.PAUL_GREYRAT.get(), ModContent.ROXY_TUTOR.get())) {
-                Mob mob = target(helper, type, field.position()); mobs.add(mob);
-                helper.assertFalse(MireTargets.eligible(player, mob), "Unsupported or protected entity never becomes an eligible target: " + type);
-            }
-            helper.assertFalse(MireTargets.eligible(player, player), "Players are hard-excluded");
+            for (Mob mob : mobs)
+                helper.assertTrue(slowed(mob), "Ground contact slows this creature: " + mob.getType());
+            for (Mob resident : storyCharacters)
+                helper.assertFalse(slowed(resident), "Story characters outside a bout stay free: " + resident.getType());
+
+            wolf.setOnGround(false);
             resolve(helper);
-            for (Mob mob : mobs) helper.assertFalse(slowed(mob), "Protected or unsupported mobs receive no modifier");
-            Husk hostile = target(helper, EntityType.HUSK, field.position()); mobs.add(hostile);
-            hostile.setNoGravity(true);
-            resolve(helper); helper.assertFalse(slowed(hostile), "Artificially flying/no-gravity enemies are excluded");
-            hostile.setNoGravity(false); hostile.setOnGround(false);
-            resolve(helper); helper.assertFalse(slowed(hostile), "A jumping enemy is not glued down");
-            hostile.setOnGround(true);
-            hostile.startRiding(mobs.get(1), true);
-            resolve(helper); helper.assertFalse(slowed(hostile), "A passenger is not grounded by its vehicle's feet");
-            hostile.stopRiding();
-        } finally { for (Mob mob : mobs) mob.discard(); close(helper, player); }
+            helper.assertFalse(slowed(wolf), "An airborne wolf no longer touches the mud");
+            wolf.setOnGround(true);
+            wolf.startRiding(mobs.getFirst(), true);
+            resolve(helper);
+            helper.assertFalse(slowed(wolf), "Riding a grounded creature is not feet contact");
+            helper.assertTrue(slowed(mobs.getFirst()), "The mount still has its own feet in the field");
+            wolf.stopRiding();
+            helper.assertFalse(MireTargets.eligible(player, player), "A field cannot slow its own caster");
+            helper.assertFalse(MireTargets.eligible(player, EntityType.ARMOR_STAND.create(helper.getLevel())),
+                    "An armor stand is a decoration");
+        } finally {
+            mobs.forEach(Entity::discard);
+            storyCharacters.forEach(Entity::discard);
+            close(helper, player);
+        }
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty")
+    public static void activeMireFollowsPetOwnershipPvpAndOwnersFriendlyFire(GameTestHelper helper) {
+        var level = helper.getLevel();
+        var server = level.getServer();
+        var board = level.getScoreboard();
+        var team = board.addPlayerTeam("pet" + UUID.randomUUID().toString().substring(0, 8));
+        boolean previousPvp = server.isPvpAllowed();
+        try (Actor caster = new Actor(helper, new GameProfile(UUID.randomUUID(), "PetMireCaster"));
+             Actor other = new Actor(helper, new GameProfile(UUID.randomUUID(), "PetMireOwner"))) {
+            server.setPvpAllowed(true);
+            level.addNewPlayer(caster);
+            level.addNewPlayer(other);
+            helper.assertTrue(MireSpell.cast(caster), "The caster creates a real field");
+            var field = onlyField(helper, caster);
+            age(field, 10);
+            var wolf = target(helper, EntityType.WOLF, field.position());
+            try {
+                wolf.setTame(true, false);
+                wolf.setOwnerUUID(caster.getUUID());
+                resolve(helper);
+                helper.assertFalse(slowed(wolf), "Even with PvP enabled, the caster's own pet is protected");
+
+                wolf.setOwnerUUID(other.getUUID());
+                resolve(helper);
+                helper.assertTrue(slowed(wolf), "Another player's pet is slowed with PvP enabled");
+                server.setPvpAllowed(false);
+                resolve(helper);
+                helper.assertFalse(slowed(wolf), "Disabling PvP immediately removes the existing pet slow");
+
+                board.addPlayerToTeam(caster.getScoreboardName(), team);
+                board.addPlayerToTeam(other.getScoreboardName(), team);
+                team.setAllowFriendlyFire(false);
+                server.setPvpAllowed(true);
+                resolve(helper);
+                helper.assertFalse(slowed(wolf), "The pet follows its owner's team protection");
+                team.setAllowFriendlyFire(true);
+                resolve(helper);
+                helper.assertTrue(slowed(wolf), "Allowing friendly fire restores the same active field's slow");
+            } finally {
+                wolf.discard();
+            }
+        } finally {
+            board.removePlayerTeam(team);
+            server.setPvpAllowed(previousPvp);
+            resolve(helper);
+        }
         helper.succeed();
     }
 
@@ -623,30 +764,50 @@ public final class MireGameTests {
     }
 
     @GameTest(template = "empty")
-    public static void overlappingFieldsDoNotStackAndFriendshipIsEvaluatedPerSource(GameTestHelper helper) {
-        Caster first = caster(helper), second = caster(helper);
-        helper.assertTrue(MireSpell.cast(first) && MireSpell.cast(second), "Two overlapping fields exist");
-        MireEntity a = onlyField(helper, first), b = onlyField(helper, second); age(a, 10); age(b, 10);
-        Husk target = target(helper, EntityType.HUSK, a.position());
-        var speed = target.getAttribute(Attributes.MOVEMENT_SPEED);
-        double baseline = speed.getValue();
+    public static void overlappingFieldsRespectEachOwnersPvpPermissionsWithoutStacking(GameTestHelper helper) {
         var board = helper.getLevel().getScoreboard();
         var team = board.addPlayerTeam("mire" + UUID.randomUUID().toString().substring(0, 8));
-        try {
+        var server = helper.getLevel().getServer();
+        boolean originalPvp = server.isPvpAllowed();
+        try (Actor first = new Actor(helper, new GameProfile(UUID.randomUUID(), "MireAlly"));
+             Actor second = new Actor(helper, new GameProfile(UUID.randomUUID(), "MireRival"));
+             Actor target = new Actor(helper, new GameProfile(UUID.randomUUID(), "MireTarget"))) {
+            helper.assertTrue(MireSpell.cast(first) && MireSpell.cast(second), "Two overlapping fields exist");
+            MireEntity a = onlyField(helper, first), b = onlyField(helper, second);
+            age(a, 10); age(b, 10);
+            target.setPos(a.position());
+            target.setOnGround(true);
+            target.getAbilities().invulnerable = false;
+            helper.getLevel().addNewPlayer(target);
+            var speed = target.getAttribute(Attributes.MOVEMENT_SPEED);
+            double baseline = speed.getValue();
+            server.setPvpAllowed(true);
             resolve(helper);
-            helper.assertTrue(Math.abs(speed.getValue() - baseline * 0.4) < 1.0E-8, "Two sources never multiply the slow twice");
+            helper.assertTrue(Math.abs(speed.getValue() - baseline * 0.4) < 1.0E-8,
+                    "World-registered players acquire one slow from two fields");
+            team.setAllowFriendlyFire(false);
             board.addPlayerToTeam(first.getScoreboardName(), team);
             board.addPlayerToTeam(target.getScoreboardName(), team);
             resolve(helper);
             helper.assertTrue(slowed(target), "Becoming the first owner's ally does not cancel another hostile source");
             b.discard(); resolve(helper);
             helper.assertFalse(slowed(target), "With only an allied source remaining, the target is restored");
-            board.removePlayerFromTeam(target.getScoreboardName(), team);
+            team.setAllowFriendlyFire(true);
             resolve(helper);
-            helper.assertTrue(slowed(target), "The remaining source can act again when the target is no longer allied");
+            helper.assertTrue(slowed(target), "Same-team players can be affected when friendly fire is enabled");
+            server.setPvpAllowed(false);
+            resolve(helper);
+            helper.assertFalse(slowed(target), "Server PvP protection removes a slow that was already active");
+            server.setPvpAllowed(true);
+            resolve(helper);
+            helper.assertTrue(slowed(target), "A field still in contact becomes effective when PvP resumes");
             a.discard(); resolve(helper);
             helper.assertFalse(slowed(target), "Removing the last source restores the target");
-        } finally { board.removePlayerTeam(team); target.discard(); close(helper, first); close(helper, second); }
+        } finally {
+            server.setPvpAllowed(originalPvp);
+            board.removePlayerTeam(team);
+            resolve(helper);
+        }
         helper.succeed();
     }
 
@@ -738,12 +899,12 @@ public final class MireGameTests {
             MireEntity a = onlyField(helper, first), b = onlyField(helper, second); age(a, 10); age(b, 10);
             resolve(helper);
             helper.assertFalse(mireComplete(first) || mireComplete(second), "Empty active fields earn no milestone");
-            Husk target = target(helper, EntityType.HUSK, a.position().add(2, 0, 2));
+            var target = target(helper, EntityType.COW, a.position().add(2, 0, 2));
             try {
                 resolve(helper);
                 helper.assertFalse(mireComplete(first) || mireComplete(second), "A target in the visually absent corner grants no progress");
                 target.setPos(a.position()); target.setOnGround(true); resolve(helper);
-                helper.assertTrue(slowed(target), "The advancement follows a real attribute application");
+                helper.assertTrue(slowed(target), "A passive animal contributes to the milestone when actually slowed");
                 helper.assertTrue(mireComplete(first) && mireComplete(second), "Every effective owner contributes even when only one modifier is needed");
                 helper.assertFalse(mireComplete(observer), "A nearby observer receives no completion");
                 helper.assertValueEqual(SpellCatalog.MIRE.practiceCount(first), 1, "Actual control does not charge or practice a second time");

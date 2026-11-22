@@ -11,7 +11,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.level.Level;
@@ -83,7 +82,8 @@ public final class MireVisuals {
     static void clientTick(MireEntity field) {
         Level level = field.level();
         long elapsed = level.getGameTime() - field.startGameTime();
-        if (elapsed < 0 || elapsed >= MireEntity.LIFETIME_TICKS) return;
+        MireGround.Surface surface = field.surface();
+        if (elapsed < 0 || elapsed >= MireEntity.LIFETIME_TICKS || surface == null) return;
         RandomSource random = level.random;
         Vec3 base = field.position();
         List<BlockPos> cells = MireEntity.CELL_OFFSETS;
@@ -92,14 +92,14 @@ public final class MireVisuals {
             for (int i = 0; i < 3; i++) {
                 BlockPos cell = cells.get(random.nextInt(cells.size()));
                 if (Math.abs(Mth.sqrt(cell.getX() * cell.getX() + cell.getZ() * cell.getZ()) - front) > 0.75F) continue;
-                Vec3 point = pointIn(base, cell, random);
+                Vec3 point = pointIn(base, cell, surface, random);
                 level.addParticle(MUD, point.x, point.y + 0.05, point.z, 0.0, 0.15, 0.0);
             }
             if (elapsed < 3) {
                 for (int i = 0; i < 2; i++) {
                     double angle = random.nextDouble() * Math.PI * 2.0, reach = random.nextDouble() * 0.9;
-                    level.addParticle(ParticleTypes.SPLASH, base.x + Math.cos(angle) * reach, base.y + 0.05,
-                            base.z + Math.sin(angle) * reach, 0.0, 0.0, 0.0);
+                    double x = base.x + Math.cos(angle) * reach, z = base.z + Math.sin(angle) * reach;
+                    level.addParticle(ParticleTypes.SPLASH, x, field.surfaceY(x, z) + 0.05, z, 0.0, 0.0, 0.0);
                 }
             }
             return;
@@ -109,7 +109,7 @@ public final class MireVisuals {
             if (random.nextFloat() < 0.2F) {
                 BlockPos cell = cells.get(random.nextInt(cells.size()));
                 if (random.nextFloat() * 3.0F > Mth.sqrt(cell.getX() * cell.getX() + cell.getZ() * cell.getZ())) {
-                    Vec3 point = pointIn(base, cell, random);
+                    Vec3 point = pointIn(base, cell, surface, random);
                     level.addParticle(ParticleTypes.BUBBLE_POP, point.x, point.y + 0.04, point.z, 0.0, 0.01, 0.0);
                     if (random.nextFloat() < 0.2F) {
                         level.playLocalSound(point.x, point.y, point.z, SoundEvents.BUBBLE_COLUMN_BUBBLE_POP, SoundSource.PLAYERS,
@@ -117,12 +117,12 @@ public final class MireVisuals {
                     }
                 }
             }
-            if (elapsed % 4 == 0) stepFeedback(field, base, random);
+            if (elapsed % 4 == 0) stepFeedback(field, random);
             return;
         }
         if (elapsed == (long) ACTIVE_END) {
             for (int i = 0; i < 6; i++) {
-                Vec3 point = pointIn(base, cells.get(random.nextInt(cells.size())), random);
+                Vec3 point = pointIn(base, cells.get(random.nextInt(cells.size())), surface, random);
                 level.addParticle(DRIED, point.x, point.y + 0.05, point.z, 0.0, 0.05, 0.0);
             }
             level.playLocalSound(base.x, base.y, base.z, SoundEvents.PACKED_MUD_PLACE, SoundSource.PLAYERS, 0.35F, 0.9F, false);
@@ -133,40 +133,34 @@ public final class MireVisuals {
      * Mobs the server is slowing carry its speed modifier, which is synced to every client, so the client can show which
      * ones are stuck without guessing at the server's rules. A mob standing where two mires overlap is shown by one.
      */
-    private static void stepFeedback(MireEntity field, Vec3 base, RandomSource random) {
+    private static void stepFeedback(MireEntity field, RandomSource random) {
         Level level = field.level();
         double reach = MireEntity.HALF_EXTENT;
-        AABB area = new AABB(base.x - reach, base.y - 0.25, base.z - reach, base.x + reach, base.y + 0.5, base.z + reach);
-        for (Mob mob : level.getEntitiesOfClass(Mob.class, area, mob -> slowed(mob) && covers(field, mob))) {
+        AABB area = field.getBoundingBox().inflate(0.0, 1.0 + MireTargets.FOOT_TOLERANCE, 0.0);
+        for (LivingEntity mob : level.getEntitiesOfClass(LivingEntity.class, area, mob -> slowed(mob) && MireTargets.touches(field, mob))) {
             if (Math.abs(mob.getX() - mob.xo) + Math.abs(mob.getZ() - mob.zo) < 0.01) continue;
             boolean first = level.getEntitiesOfClass(MireEntity.class, mob.getBoundingBox().inflate(reach + 1.0),
-                    other -> other.getId() < field.getId() && other.activeAt(level.getGameTime()) && covers(other, mob)).isEmpty();
+                    other -> other.getId() < field.getId() && other.activeAt(level.getGameTime()) && MireTargets.touches(other, mob)).isEmpty();
             if (!first) continue;
             double spread = mob.getBbWidth() * 0.4;
             for (int i = 0; i < 2; i++) {
-                level.addParticle(MUD, mob.getX() + (random.nextDouble() * 2.0 - 1.0) * spread, base.y + 0.05,
-                        mob.getZ() + (random.nextDouble() * 2.0 - 1.0) * spread, 0.0, 0.1, 0.0);
+                double x = mob.getX() + (random.nextDouble() * 2.0 - 1.0) * spread;
+                double z = mob.getZ() + (random.nextDouble() * 2.0 - 1.0) * spread;
+                double y = field.surfaceY(x, z);
+                if (Double.isFinite(y)) level.addParticle(MUD, x, y + 0.05, z, 0.0, 0.1, 0.0);
             }
         }
     }
 
-    private static boolean slowed(Mob mob) {
+    private static boolean slowed(LivingEntity mob) {
         AttributeInstance speed = mob.getAttribute(Attributes.MOVEMENT_SPEED);
         return speed != null && speed.hasModifier(MireFields.SLOW_ID);
     }
 
-    /** Feet over one of the field's cells and near its surface; the server's own test decides the actual slowing. */
-    private static boolean covers(MireEntity field, Mob mob) {
-        if (Math.abs(mob.getY() - field.getY()) > 0.2) return false;
-        BlockPos centre = field.blockPosition();
-        BlockPos feet = BlockPos.containing(mob.getX(), field.getY(), mob.getZ());
-        return MireEntity.CELL_OFFSETS.contains(new BlockPos(feet.getX() - centre.getX(), 0, feet.getZ() - centre.getZ()));
-    }
-
     /** A random point on a cell's surface, kept off the edge band. */
-    private static Vec3 pointIn(Vec3 base, BlockPos cell, RandomSource random) {
+    private static Vec3 pointIn(Vec3 base, BlockPos cell, MireGround.Surface surface, RandomSource random) {
         double inner = 0.5 - RIM;
-        return new Vec3(base.x + cell.getX() + (random.nextDouble() * 2.0 - 1.0) * inner, base.y,
+        return new Vec3(base.x + cell.getX() + (random.nextDouble() * 2.0 - 1.0) * inner, base.y + surface.offsetAt(cell.getX(), cell.getZ()),
                 base.z + cell.getZ() + (random.nextDouble() * 2.0 - 1.0) * inner);
     }
 

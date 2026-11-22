@@ -3,6 +3,7 @@ package dev.joblessreincarnation.client;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import dev.joblessreincarnation.magic.MireEntity;
+import dev.joblessreincarnation.magic.MireGround;
 import dev.joblessreincarnation.magic.MireVisuals;
 import java.util.ArrayList;
 import java.util.List;
@@ -74,7 +75,8 @@ public final class MireRenderer extends EntityRenderer<MireEntity> {
                        int packedLight) {
         float age = field.ageTicks(partialTick);
         float fade = MireVisuals.fade(age);
-        if (fade <= 0.0F) return;
+        MireGround.Surface surface = field.surface();
+        if (fade <= 0.0F || surface == null) return;
         // The mud dries into packed mud over the first half of the fade, while the whole surface thins out.
         float dried = smooth(MireVisuals.dry(age) * 2.0F), rim = MireVisuals.rim(age), wet = MireVisuals.wet(age);
         var atlas = Minecraft.getInstance().getTextureAtlas(TextureAtlas.LOCATION_BLOCKS);
@@ -82,7 +84,8 @@ public final class MireRenderer extends EntityRenderer<MireEntity> {
         BlockPos centre = field.blockPosition();
         int[] light = new int[25];
         for (BlockPos offset : MireEntity.CELL_OFFSETS) {
-            light[index(offset.getX(), offset.getZ())] = LevelRenderer.getLightColor(field.level(), centre.offset(offset));
+            int y = surface.offsetAt(offset.getX(), offset.getZ());
+            light[index(offset.getX(), offset.getZ())] = LevelRenderer.getLightColor(field.level(), centre.offset(offset).above(y));
         }
         PoseStack.Pose pose = poses.last();
         VertexConsumer out = buffers.getBuffer(LAYERS);
@@ -90,21 +93,22 @@ public final class MireRenderer extends EntityRenderer<MireEntity> {
             long seed = cellSeed(centre.getX() + patch.cellX(), centre.getZ() + patch.cellZ());
             boolean flipU = (seed & 1L) != 0L, flipV = (seed & 2L) != 0L;
             int cellLight = light[index(patch.cellX(), patch.cellZ())];
+            int y = surface.offsetAt(patch.cellX(), patch.cellZ());
             float[][] corners = corners(patch);
             if (patch.band()) {
                 float[] tint = mix(BAND, DRIED, dried);
-                for (float[] c : corners) vertex(pose, out, earth, patch, c[0], MUD_Y, c[1], flipU, flipV, tint, BAND_ALPHA * rim, cellLight);
+                for (float[] c : corners) vertex(pose, out, earth, patch, c[0], y + MUD_Y, c[1], flipU, flipV, tint, BAND_ALPHA * rim, cellLight);
             } else {
                 for (float[] c : corners) {
                     float distance = Mth.sqrt(c[0] * c[0] + c[1] * c[1]);
                     float[] tint = mix(CENTRE, OUTER, Mth.clamp(distance / (float) MireEntity.RADIUS, 0.0F, 1.0F));
-                    vertex(pose, out, mud, patch, c[0], MUD_Y, c[1], flipU, flipV, tint,
+                    vertex(pose, out, mud, patch, c[0], y + MUD_Y, c[1], flipU, flipV, tint,
                             MUD_ALPHA * MireVisuals.fill(age, distance) * fade * (1.0F - dried), cellLight);
                 }
                 if (dried > 0.0F) {
                     for (float[] c : corners) {
                         float distance = Mth.sqrt(c[0] * c[0] + c[1] * c[1]);
-                        vertex(pose, out, earth, patch, c[0], DRY_Y, c[1], flipU, flipV, DRIED,
+                        vertex(pose, out, earth, patch, c[0], y + DRY_Y, c[1], flipU, flipV, DRIED,
                                 MUD_ALPHA * MireVisuals.fill(age, distance) * fade * dried, cellLight);
                     }
                 }
@@ -115,10 +119,10 @@ public final class MireRenderer extends EntityRenderer<MireEntity> {
             float shimmer = 0.8F + 0.2F * Mth.sin(age * 0.15F + (seed >>> 8 & 63L) * 0.1F);
             for (float[] c : corners) {
                 float fill = MireVisuals.fill(age, Mth.sqrt(c[0] * c[0] + c[1] * c[1]));
-                vertex(pose, out, film, patch, c[0], FILM_Y, c[1], false, false, FILM_RGB, FILM_ALPHA * wet * shimmer * fill, filmLight);
+                vertex(pose, out, film, patch, c[0], y + FILM_Y, c[1], false, false, FILM_RGB, FILM_ALPHA * wet * shimmer * fill, filmLight);
             }
         }
-        if (wet > 0.0F) glints(pose, buffers.getBuffer(GLINTS), atlas.apply(SHINE), centre, light, age, wet);
+        if (wet > 0.0F) glints(pose, buffers.getBuffer(GLINTS), atlas.apply(SHINE), centre, surface, light, age, wet);
         super.render(field, entityYaw, partialTick, poses, buffers, packedLight);
     }
 
@@ -127,7 +131,7 @@ public final class MireRenderer extends EntityRenderer<MireEntity> {
      * few are always catching the light somewhere on the surface.
      */
     private static void glints(PoseStack.Pose pose, VertexConsumer out, TextureAtlasSprite shine, BlockPos centre,
-                               int[] light, float age, float wet) {
+                               MireGround.Surface surface, int[] light, float age, float wet) {
         float inner = 0.5F - MireVisuals.RIM - GLINT_SIZE;
         for (BlockPos cell : MireEntity.CELL_OFFSETS) {
             long seed = cellSeed(centre.getX() + cell.getX(), centre.getZ() + cell.getZ());
@@ -140,7 +144,8 @@ public final class MireRenderer extends EntityRenderer<MireEntity> {
                 float alpha = GLINT_ALPHA * wet * (flash > 0.0F ? (float) Math.pow(flash, 6.0) : 0.0F);
                 if (alpha < 0.02F) continue;
                 Patch spot = new Patch(cell.getX(), cell.getZ(), x, z, x + GLINT_SIZE, z + GLINT_SIZE, false);
-                for (float[] c : corners(spot)) vertex(pose, out, shine, spot, c[0], GLINT_Y, c[1], false, false, GLINT_RGB, alpha, glintLight);
+                float y = surface.offsetAt(cell.getX(), cell.getZ()) + GLINT_Y;
+                for (float[] c : corners(spot)) vertex(pose, out, shine, spot, c[0], y, c[1], false, false, GLINT_RGB, alpha, glintLight);
             }
         }
     }
